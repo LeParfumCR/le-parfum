@@ -62,6 +62,20 @@ const pageTitle = `${title} | Le Parfum`;
     />
 
     <!-- Schema.org base — se extiende por página (producto, organización, etc.) -->
+    <!-- Red de seguridad para Netlify Identity: los correos de invitación/recuperación
+         de contraseña por defecto enlazan a la raíz del sitio con el token en el hash
+         (#invite_token=... / #recovery_token=...). Solo /admin tiene el widget que sabe
+         leer ese token, así que si alguien abre el link desde cualquier otra página,
+         lo reenviamos a /admin conservando el token para que sí se procese. -->
+    <script is:inline>
+      (function () {
+        var hash = window.location.hash;
+        if (hash && /invite_token|recovery_token|confirmation_token/.test(hash) && window.location.pathname !== '/admin/') {
+          window.location.replace('/admin/' + hash);
+        }
+      })();
+    </script>
+
     <script type="application/ld+json" set:html={JSON.stringify({
       '@context': 'https://schema.org',
       '@type': 'Organization',
