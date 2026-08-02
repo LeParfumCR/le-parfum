@@ -1,0 +1,450 @@
+---
+import monogramImage from '../assets/brand/le-parfum-monogram.webp';
+---
+<header class="nav" id="site-header">
+  <a href="/" class="nav__logo" aria-label="Le Parfum — inicio">
+    <img src={monogramImage.src} alt="Le Parfum" class="nav__logo-img" width="776" height="602" />
+  </a>
+
+  <nav class="nav__links">
+    <a href="/#catalogo"><span>Catálogo</span></a>
+    <a href="/nosotros"><span>Nosotros</span></a>
+  </nav>
+
+  <div class="nav__actions">
+    <button class="nav__theme" id="theme-toggle" aria-label="Cambiar a modo oscuro">
+      <span class="nav__theme-icons">
+        <svg class="icon-sun" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="12" cy="12" r="4.5" />
+          <path d="M12 2.5v2.5M12 19v2.5M4.6 4.6l1.8 1.8M17.6 17.6l1.8 1.8M2.5 12H5M19 12h2.5M4.6 19.4l1.8-1.8M17.6 6.4l1.8-1.8" />
+        </svg>
+        <svg class="icon-moon" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M20 14.5a8.5 8.5 0 1 1-10.5-11 7 7 0 0 0 10.5 11z" />
+        </svg>
+      </span>
+    </button>
+    <button class="nav__cart" id="cart-toggle" aria-label="Ver carrito">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M3 4h2l1.4 11.6a2 2 0 0 0 2 1.9h8.7a2 2 0 0 0 2-1.7L20.5 8H6.2" />
+        <circle cx="9" cy="20" r="1.2" fill="currentColor" stroke="none" />
+        <circle cx="17" cy="20" r="1.2" fill="currentColor" stroke="none" />
+      </svg>
+      <span class="nav__cart-count" id="cart-count" hidden>0</span>
+    </button>
+    <button class="nav__burger" id="menu-toggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="mobile-menu">
+      <span class="nav__burger-lines" aria-hidden="true">
+        <span></span><span></span>
+      </span>
+    </button>
+  </div>
+</header>
+
+<div class="mobile-menu" id="mobile-menu" data-open="false">
+  <nav class="mobile-menu__links" aria-label="Menú principal">
+    <a href="/#catalogo">Catálogo</a>
+    <a href="/nosotros">Nosotros</a>
+    <a href="/preguntas-frecuentes">Preguntas frecuentes</a>
+  </nav>
+</div>
+<button class="mobile-menu__scrim" id="mobile-menu-scrim" data-open="false" aria-hidden="true" tabindex="-1"></button>
+
+<script>
+  import { CART_UPDATED_EVENT, CART_TOGGLE_EVENT, cartCount } from '../scripts/cart.ts';
+
+  const header = document.getElementById('site-header');
+  const themeToggle = document.getElementById('theme-toggle');
+  const cartToggle = document.getElementById('cart-toggle');
+  const cartCountEl = document.getElementById('cart-count');
+
+  function isDark() {
+    return document.documentElement.getAttribute('data-theme') === 'dark';
+  }
+
+  function updateThemeButton() {
+    themeToggle?.setAttribute('aria-label', isDark() ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro');
+    themeToggle?.classList.toggle('is-dark', isDark());
+  }
+
+  themeToggle?.addEventListener('click', () => {
+    const next = isDark() ? 'light' : 'dark';
+    if (next === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+    }
+    localStorage.setItem('leparfum_theme', next);
+    updateThemeButton();
+  });
+
+  updateThemeButton();
+
+  cartToggle?.addEventListener('click', () => {
+    window.dispatchEvent(new CustomEvent(CART_TOGGLE_EVENT));
+  });
+
+  let prevCount = cartCount();
+
+  function updateCartCount() {
+    const count = cartCount();
+    if (cartCountEl) {
+      cartCountEl.textContent = String(count);
+      cartCountEl.hidden = count === 0;
+      if (count > prevCount) {
+        cartCountEl.classList.remove('is-popping');
+        // Forzar reflow para poder relanzar la animación en clics consecutivos
+        void cartCountEl.offsetWidth;
+        cartCountEl.classList.add('is-popping');
+      }
+    }
+    prevCount = count;
+  }
+
+  window.addEventListener(CART_UPDATED_EVENT, updateCartCount);
+  updateCartCount();
+
+  // Header se vuelve "glass" apenas hay scroll — separa el contenido del fondo sin robarle protagonismo
+  const onScroll = () => {
+    header?.classList.toggle('is-scrolled', window.scrollY > 8);
+  };
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  // Expone la altura real del header para que otras barras sticky (ej. filtros del catálogo) se acoplen debajo sin taparse
+  function updateHeaderHeight() {
+    if (header) {
+      document.documentElement.style.setProperty('--header-height', `${header.offsetHeight}px`);
+    }
+  }
+  updateHeaderHeight();
+  window.addEventListener('resize', updateHeaderHeight);
+
+  // Menú móvil — panel deslizante con scrim, principal medio de navegación en celular
+  const menuToggle = document.getElementById('menu-toggle');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const menuScrim = document.getElementById('mobile-menu-scrim');
+
+  function setMenu(open: boolean) {
+    menuToggle?.setAttribute('aria-expanded', String(open));
+    menuToggle?.classList.toggle('is-open', open);
+    mobileMenu?.setAttribute('data-open', String(open));
+    menuScrim?.setAttribute('data-open', String(open));
+    document.body.style.overflow = open ? 'hidden' : '';
+  }
+
+  menuToggle?.addEventListener('click', () => {
+    setMenu(mobileMenu?.getAttribute('data-open') !== 'true');
+  });
+
+  menuScrim?.addEventListener('click', () => setMenu(false));
+
+  mobileMenu?.querySelectorAll('a').forEach((a) => {
+    a.addEventListener('click', () => setMenu(false));
+  });
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') setMenu(false);
+  });
+</script>
+
+<style>
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1400px;
+    margin-inline: auto;
+    padding: var(--space-sm) clamp(1.25rem, 4vw, 4rem);
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: transparent;
+    border-bottom: 1px solid transparent;
+    transition: background-color var(--duration-base) var(--ease-standard),
+      border-color var(--duration-base) var(--ease-standard),
+      backdrop-filter var(--duration-base) var(--ease-standard);
+  }
+
+  .nav.is-scrolled {
+    background: color-mix(in srgb, var(--color-bg) 78%, transparent);
+    backdrop-filter: blur(14px) saturate(1.4);
+    -webkit-backdrop-filter: blur(14px) saturate(1.4);
+    border-bottom-color: var(--color-border);
+  }
+
+  .nav__logo {
+    display: flex;
+    align-items: center;
+    line-height: 0;
+  }
+
+  .nav__logo-img {
+    height: 50px;
+    width: 64px;
+    object-fit: contain;
+    transition: transform var(--duration-base) var(--ease-standard),
+      filter var(--duration-base) var(--ease-standard);
+  }
+
+  .nav__logo:hover .nav__logo-img {
+    transform: scale(1.04);
+  }
+
+  /* El logo es oscuro sobre transparencia; en dark mode se invierte para seguir siendo legible */
+  [data-theme='dark'] .nav__logo-img {
+    filter: invert(1) brightness(1.15);
+  }
+
+  .nav__links {
+    display: flex;
+    gap: var(--space-lg);
+  }
+
+  .nav__links a {
+    text-decoration: none;
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    position: relative;
+    padding-bottom: 0.3em;
+    transition: color var(--duration-fast) var(--ease-standard);
+  }
+
+  .nav__links a span {
+    position: relative;
+  }
+
+  /* Subrayado que crece desde el centro, no desde el borde — se siente más intencional */
+  .nav__links a::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    right: 50%;
+    bottom: 0;
+    height: 1px;
+    background: var(--color-text);
+    transition: left var(--duration-base) var(--ease-standard),
+      right var(--duration-base) var(--ease-standard);
+  }
+
+  .nav__links a:hover {
+    color: var(--color-text);
+  }
+
+  .nav__links a:hover::after {
+    left: 0;
+    right: 0;
+  }
+
+  .nav__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+
+  .nav__theme,
+  .nav__cart {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-text);
+    padding: 0.4rem;
+    border-radius: 50%;
+    display: flex;
+    position: relative;
+    transition: background-color var(--duration-fast) var(--ease-standard),
+      transform var(--duration-fast) var(--ease-standard);
+  }
+
+  .nav__theme:hover,
+  .nav__cart:hover {
+    background: var(--color-border);
+    transform: translateY(-1px);
+  }
+
+  .nav__theme:active,
+  .nav__cart:active {
+    transform: translateY(0) scale(0.94);
+  }
+
+  .nav__theme-icons {
+    position: relative;
+    width: 19px;
+    height: 19px;
+    display: block;
+  }
+
+  .icon-sun,
+  .icon-moon {
+    position: absolute;
+    inset: 0;
+    transition: opacity var(--duration-base) var(--ease-standard),
+      transform var(--duration-base) var(--ease-standard);
+  }
+
+  .icon-moon {
+    opacity: 0;
+    transform: rotate(-90deg) scale(0.5);
+  }
+
+  .nav__theme.is-dark .icon-sun {
+    opacity: 0;
+    transform: rotate(90deg) scale(0.5);
+  }
+
+  .nav__theme.is-dark .icon-moon {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+  }
+
+  .nav__cart-count {
+    position: absolute;
+    top: -2px;
+    right: -4px;
+    background: var(--color-accent-dark);
+    color: var(--color-bg-elevated);
+    font-size: 0.65rem;
+    line-height: 1;
+    min-width: 16px;
+    height: 16px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 3px;
+  }
+
+  .nav__cart-count.is-popping {
+    animation: cart-pop 420ms var(--ease-standard);
+  }
+
+  @keyframes cart-pop {
+    0% { transform: scale(1); }
+    35% { transform: scale(1.55); }
+    60% { transform: scale(0.9); }
+    100% { transform: scale(1); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nav__cart-count.is-popping {
+      animation: none;
+    }
+    .icon-sun, .icon-moon, .nav__logo-img, .nav__theme, .nav__cart {
+      transition: none;
+    }
+  }
+
+  .nav__burger {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-text);
+    padding: 0.5rem;
+    border-radius: 50%;
+  }
+
+  .nav__burger-lines {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: 18px;
+  }
+
+  .nav__burger-lines span {
+    display: block;
+    height: 1.5px;
+    background: currentColor;
+    border-radius: 1px;
+    transition: transform var(--duration-base) var(--ease-standard),
+      opacity var(--duration-fast) var(--ease-standard);
+  }
+
+  /* Las dos líneas se convierten en una X — sin librería, solo rotación + reposición */
+  .nav__burger.is-open .nav__burger-lines span:first-child {
+    transform: translateY(3.25px) rotate(45deg);
+  }
+
+  .nav__burger.is-open .nav__burger-lines span:last-child {
+    transform: translateY(-3.25px) rotate(-45deg);
+  }
+
+  .mobile-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    background: var(--color-bg-elevated);
+    border-bottom: 1px solid var(--color-border);
+    padding: calc(64px + var(--space-md)) var(--space-md) var(--space-lg);
+    transform: translateY(-100%);
+    opacity: 0;
+    transition: transform var(--duration-base) var(--ease-standard),
+      opacity var(--duration-base) var(--ease-standard);
+    visibility: hidden;
+  }
+
+  .mobile-menu[data-open='true'] {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .mobile-menu__links {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .mobile-menu__links a {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    text-decoration: none;
+    color: var(--color-text);
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity var(--duration-base) var(--ease-standard),
+      transform var(--duration-base) var(--ease-standard);
+  }
+
+  .mobile-menu[data-open='true'] .mobile-menu__links a {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .mobile-menu[data-open='true'] .mobile-menu__links a:nth-child(1) { transition-delay: 60ms; }
+  .mobile-menu[data-open='true'] .mobile-menu__links a:nth-child(2) { transition-delay: 110ms; }
+  .mobile-menu[data-open='true'] .mobile-menu__links a:nth-child(3) { transition-delay: 160ms; }
+
+  .mobile-menu__scrim {
+    position: fixed;
+    inset: 0;
+    z-index: 45;
+    background: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(2px);
+    border: none;
+    padding: 0;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--duration-base) var(--ease-standard);
+  }
+
+  .mobile-menu__scrim[data-open='true'] {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mobile-menu, .mobile-menu__links a, .mobile-menu__scrim, .nav__burger-lines span {
+      transition: none;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .nav__links {
+      display: none;
+    }
+    .nav__burger {
+      display: flex;
+    }
+  }
+</style>

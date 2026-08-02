@@ -1,0 +1,40 @@
+{
+  "perfumes": [
+    {
+      "id": "001",
+      "slug": "midnight-oud",
+      "nombre": "Midnight Oud",
+      "marca": "Le Labo",
+      "precio": 45000,
+      "moneda": "CRC",
+      "imagen": "/images/perfumes/midnight-oud.jpg",
+      "disponible": true,
+      "destacado": true,
+      "badge": "mas-vendido"
+    },
+    {
+      "id": "002",
+      "slug": "rose-blanche",
+      "nombre": "Rose Blanche",
+      "marca": "Byredo",
+      "precio": 38000,
+      "moneda": "CRC",
+      "imagen": "/images/perfumes/rose-blanche.jpg",
+      "disponible": true,
+      "destacado": true,
+      "badge": "nuevo"
+    },
+    {
+      "id": "003",
+      "slug": "vetiver-noir",
+      "nombre": "Vetiver Noir",
+      "marca": "Diptyque",
+      "precio": 42000,
+      "moneda": "CRC",
+      "imagen": "/images/perfumes/vetiver-noir.jpg",
+      "disponible": false,
+      "destacado": true,
+      "badge": null
+    }
+  ]
+}

@@ -1,0 +1,99 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import config from '../data/config.json';
+---
+
+<Layout
+  title="Términos y condiciones"
+  description="Términos y condiciones de uso del sitio y de compra en Le Parfum."
+>
+  <Header />
+
+  <main class="container">
+    <h1>Términos y condiciones</h1>
+    <p class="updated">Última actualización: agosto de 2026</p>
+
+    <p>
+      Al navegar y comprar en Le Parfum aceptás los siguientes términos.
+      Léelos con atención.
+    </p>
+
+    <h2>Productos</h2>
+    <p>
+      Todos los perfumes que ofrecemos son 100% originales. Las imágenes son
+      referenciales; el color del empaque puede variar levemente según el
+      lote del fabricante.
+    </p>
+
+    <h2>Precios</h2>
+    <p>
+      Los precios se muestran en la moneda indicada en cada producto y
+      pueden cambiar sin previo aviso. El precio vigente es el que aparece
+      en el sitio al momento de tu consulta o compra.
+    </p>
+
+    <h2>Disponibilidad</h2>
+    <p>
+      Los productos marcados como "agotado" no están disponibles para compra
+      inmediata. Podés escribirnos para consultar tiempos estimados de
+      reposición.
+    </p>
+
+    <h2>Proceso de compra</h2>
+    <p>
+      Actualmente coordinamos las compras directamente por WhatsApp. Al
+      contactarnos, confirmamos disponibilidad, forma de pago y entrega
+      antes de procesar el pedido.
+    </p>
+
+    <h2>Uso del sitio</h2>
+    <p>
+      El contenido de este sitio (textos, imágenes, marca) es propiedad de
+      Le Parfum o de sus proveedores autorizados y no puede reproducirse sin
+      permiso.
+    </p>
+
+    <h2>Contacto</h2>
+    <p>
+      Para consultas sobre estos términos, escribinos a{' '}
+      {config.email && <a href={`mailto:${config.email}`}>{config.email}</a>}.
+    </p>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+  .container {
+    max-width: 720px;
+    margin-inline: auto;
+    padding: var(--space-xl) var(--space-md) var(--space-2xl);
+  }
+
+  h1 {
+    font-size: var(--text-2xl);
+    margin-bottom: var(--space-xs);
+  }
+
+  .updated {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-lg);
+  }
+
+  h2 {
+    font-size: var(--text-lg);
+    margin-top: var(--space-lg);
+    margin-bottom: var(--space-xs);
+  }
+
+  p {
+    line-height: 1.7;
+  }
+
+  a {
+    color: var(--color-accent-dark);
+  }
+</style>

@@ -1,0 +1,45 @@
+backend:
+  name: git-gateway
+  branch: main
+
+publish_mode: simple
+
+media_folder: "public/images/perfumes"
+public_folder: "/images/perfumes"
+
+collections:
+  - name: "perfumes"
+    label: "Perfumes"
+    files:
+      - name: "catalogo"
+        label: "Catálogo de perfumes"
+        file: "src/data/perfumes.json"
+        fields:
+          - label: "Perfumes"
+            name: "perfumes"
+            widget: "list"
+            label_singular: "Perfume"
+            summary: "{{fields.nombre}} — {{fields.disponible}}"
+            fields:
+              - { label: "ID", name: "id", widget: "string", hint: "Identificador único, ej. 004" }
+              - { label: "Slug (para la URL)", name: "slug", widget: "string", hint: "ej. midnight-oud, sin espacios ni tildes" }
+              - { label: "Nombre", name: "nombre", widget: "string" }
+              - { label: "Marca", name: "marca", widget: "string", default: "Le Parfum" }
+              - { label: "Precio", name: "precio", widget: "number", value_type: "int" }
+              - { label: "Moneda", name: "moneda", widget: "select", options: ["CRC", "USD"], default: "CRC" }
+              - { label: "Imagen", name: "imagen", widget: "image" }
+              - { label: "Disponible", name: "disponible", widget: "boolean", default: true }
+              - label: "Categoría"
+                name: "categoria"
+                widget: "select"
+                options: ["hombre", "mujer", "unisex"]
+              - label: "Top ventas (aparece en el bloque superior)"
+                name: "destacado"
+                widget: "boolean"
+                default: false
+                hint: "Marca hasta 3. Si marcas más de 3, se muestran los primeros 3 en el orden del catálogo."
+              - label: "Insignia"
+                name: "badge"
+                widget: "select"
+                required: false
+                options: ["mas-vendido", "nuevo", "exclusivo"]

@@ -1,0 +1,371 @@
+---
+interface Perfume {
+  slug: string;
+  nombre: string;
+  marca: string;
+  precio: number;
+  moneda: string;
+  imagen: string;
+  disponible: boolean;
+}
+
+interface Props {
+  perfumes: Perfume[];
+}
+
+const { perfumes } = Astro.props;
+const items = perfumes.slice(0, 8);
+---
+
+{items.length > 0 && (
+  <section class="top" aria-label="Top ventas" id="top-ventas">
+    <div class="top__head">
+      <p class="top__eyebrow">Top ventas</p>
+      <h2 class="top__heading">Los favoritos de la casa</h2>
+      {items.length > 1 && <p class="top__hint">Desliza para ver más</p>}
+    </div>
+
+    <div class="top__track" id="top-track" role="list">
+      {items.map((p, i) => (
+        <a href={`/producto/${p.slug}`} class="top__card" role="listitem" data-index={i}>
+          <span class="top__rank">N.º {i + 1}</span>
+          <div class="top__image-wrap">
+            <img src={p.imagen} alt={p.nombre} loading={i < 2 ? 'eager' : 'lazy'} decoding="async" width="360" height="450" class="skeleton" />
+            {!p.disponible && <span class="top__overlay">Agotado</span>}
+          </div>
+          <p class="top__name">{p.nombre}</p>
+          <p class="top__price">
+            {new Intl.NumberFormat('es-CR', { style: 'currency', currency: p.moneda, maximumFractionDigits: 0 }).format(p.precio)}
+          </p>
+        </a>
+      ))}
+    </div>
+
+    {items.length > 1 && (
+      <div class="top__controls">
+        <div class="top__dots" id="top-dots" role="tablist" aria-label="Ir a producto">
+          {items.map((_, i) => (
+            <button type="button" class="top__dot" data-goto={i} aria-label={`Ver producto ${i + 1}`}></button>
+          ))}
+        </div>
+        <div class="top__arrows">
+          <button type="button" id="top-prev" aria-label="Anterior">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 6l-6 6 6 6"/></svg>
+          </button>
+          <button type="button" id="top-next" aria-label="Siguiente">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 6l6 6-6 6"/></svg>
+          </button>
+        </div>
+      </div>
+    )}
+  </section>
+)}
+
+<script>
+  const track = document.getElementById('top-track');
+  const prevBtn = document.getElementById('top-prev');
+  const nextBtn = document.getElementById('top-next');
+  const dots = document.querySelectorAll<HTMLButtonElement>('.top__dot');
+
+  if (track) {
+    const cards = Array.from(track.querySelectorAll<HTMLElement>('.top__card'));
+
+    // La tarjeta centrada se agranda levemente — la señal de "foco" reemplaza al truco 3D, sin sus riesgos de compatibilidad
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            entry.target.classList.toggle('is-centered', entry.isIntersecting && entry.intersectionRatio > 0.6);
+          });
+        },
+        { root: track, threshold: [0, 0.6, 1] }
+      );
+      cards.forEach((card) => observer.observe(card));
+    }
+
+    function scrollToIndex(i: number) {
+      const card = cards[i];
+      if (!card) return;
+      track!.scrollTo({
+        left: card.offsetLeft - (track!.clientWidth - card.clientWidth) / 2,
+        behavior: 'smooth',
+      });
+    }
+
+    function currentIndex() {
+      const center = track!.scrollLeft + track!.clientWidth / 2;
+      let closest = 0;
+      let closestDist = Infinity;
+      cards.forEach((card, i) => {
+        const cardCenter = card.offsetLeft + card.clientWidth / 2;
+        const dist = Math.abs(cardCenter - center);
+        if (dist < closestDist) {
+          closestDist = dist;
+          closest = i;
+        }
+      });
+      return closest;
+    }
+
+    function updateDots() {
+      const active = currentIndex();
+      dots.forEach((dot, i) => dot.classList.toggle('is-active', i === active));
+    }
+
+    prevBtn?.addEventListener('click', () => scrollToIndex(Math.max(0, currentIndex() - 1)));
+    nextBtn?.addEventListener('click', () => scrollToIndex(Math.min(cards.length - 1, currentIndex() + 1)));
+
+    dots.forEach((dot) => {
+      dot.addEventListener('click', () => scrollToIndex(Number(dot.dataset.goto)));
+    });
+
+    let scrollTimer: ReturnType<typeof setTimeout>;
+    track.addEventListener('scroll', () => {
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(updateDots, 100);
+    }, { passive: true });
+
+    updateDots();
+
+    // Arrastre con mouse en desktop (touch ya trae scroll nativo con momentum, no hay que reinventarlo)
+    let isDown = false;
+    let startX = 0;
+    let startScroll = 0;
+    let didDrag = false;
+
+    track.addEventListener('mousedown', (e) => {
+      isDown = true;
+      didDrag = false;
+      startX = e.pageX;
+      startScroll = track.scrollLeft;
+      track.classList.add('is-dragging');
+    });
+
+    window.addEventListener('mouseup', () => {
+      isDown = false;
+      track?.classList.remove('is-dragging');
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isDown || !track) return;
+      const delta = e.pageX - startX;
+      if (Math.abs(delta) > 4) didDrag = true;
+      track.scrollLeft = startScroll - delta;
+    });
+
+    cards.forEach((card) => {
+      card.addEventListener('click', (e) => {
+        if (didDrag) e.preventDefault();
+      });
+    });
+
+    track.querySelectorAll<HTMLImageElement>('.skeleton').forEach((img) => {
+      const clear = () => img.classList.remove('skeleton');
+      if (img.complete) clear();
+      else img.addEventListener('load', clear, { once: true });
+    });
+  }
+</script>
+
+<style>
+  .top {
+    max-width: 1200px;
+    margin: var(--space-lg) auto 0;
+    padding: var(--space-lg) 0 var(--space-xl);
+  }
+
+  .top__head {
+    text-align: center;
+    margin-bottom: var(--space-lg);
+    padding-inline: var(--space-md);
+  }
+
+  .top__eyebrow {
+    font-size: var(--text-xs);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-accent-dark);
+    margin: 0 0 var(--space-xs);
+  }
+
+  .top__heading {
+    font-size: var(--text-2xl);
+    margin: 0 0 var(--space-xs);
+  }
+
+  .top__hint {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+
+  .top__track {
+    display: flex;
+    gap: var(--space-md);
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+    padding: var(--space-xs) var(--space-md) var(--space-sm);
+    cursor: grab;
+  }
+
+  .top__track.is-dragging {
+    cursor: grabbing;
+    scroll-snap-type: none;
+  }
+
+  .top__track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .top__card {
+    flex: 0 0 auto;
+    width: 240px;
+    scroll-snap-align: center;
+    text-decoration: none;
+    color: var(--color-text);
+    position: relative;
+    opacity: 0.6;
+    transform: scale(0.94);
+    transition: opacity var(--duration-base) var(--ease-standard),
+      transform var(--duration-base) var(--ease-standard);
+  }
+
+  .top__card.is-centered {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .top__rank {
+    position: absolute;
+    top: var(--space-xs);
+    left: var(--space-xs);
+    z-index: 1;
+    font-family: var(--font-display);
+    font-size: var(--text-sm);
+    background: var(--color-bg-elevated);
+    padding: 0.15em 0.6em;
+    border-radius: var(--radius-sm);
+    pointer-events: none;
+  }
+
+  .top__image-wrap {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background: var(--color-bg-elevated);
+    margin-bottom: var(--space-xs);
+    box-shadow: var(--shadow-hover);
+    pointer-events: none;
+  }
+
+  .top__image-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .top__overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-bg-elevated);
+    background: rgba(26, 26, 26, 0.55);
+    font-size: var(--text-xs);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .top__name {
+    font-size: var(--text-base);
+    margin: 0;
+    pointer-events: none;
+  }
+
+  .top__price {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    margin: 0;
+    pointer-events: none;
+  }
+
+  .top__controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-lg);
+    margin-top: var(--space-sm);
+  }
+
+  .top__dots {
+    display: flex;
+    gap: 0.4rem;
+  }
+
+  .top__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    border: none;
+    padding: 0;
+    background: var(--color-border);
+    cursor: pointer;
+    transition: background-color var(--duration-fast) var(--ease-standard),
+      transform var(--duration-fast) var(--ease-standard);
+  }
+
+  .top__dot.is-active {
+    background: var(--color-accent-dark);
+    transform: scale(1.3);
+  }
+
+  .top__arrows {
+    display: flex;
+    gap: var(--space-sm);
+  }
+
+  .top__arrows button {
+    background: none;
+    border: 1px solid var(--color-border);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text);
+    cursor: pointer;
+    transition: background-color var(--duration-fast) var(--ease-standard),
+      transform var(--duration-fast) var(--ease-standard);
+  }
+
+  .top__arrows button:hover {
+    background: var(--color-border);
+  }
+
+  .top__arrows button:active {
+    transform: scale(0.9);
+  }
+
+  @media (max-width: 640px) {
+    .top__arrows {
+      display: none;
+    }
+    .top__card {
+      width: 68vw;
+      max-width: 260px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .top__track {
+      scroll-behavior: auto;
+    }
+    .top__card {
+      transition: none;
+    }
+  }
+</style>

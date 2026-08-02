@@ -1,0 +1,124 @@
+---
+// Hero — pieza de apertura de la home. El collage es el protagonista;
+// todo el resto del layout existe para dirigir la mirada hacia él.
+import './Hero.css';
+import collageImage from '../../assets/brand/bestsellers-collage.webp';
+import monogramImage from '../../assets/brand/le-parfum-monogram.webp';
+
+interface Props {
+  nombre: string;
+  precio: number;
+  moneda: string;
+  imagen: string;
+  slug: string;
+  marca?: string;
+}
+
+const { nombre, precio, moneda, slug, marca = 'Maison sélectionnée' } = Astro.props;
+
+const precioFormateado = new Intl.NumberFormat('es-CR', {
+  style: 'currency',
+  currency: moneda,
+  maximumFractionDigits: 0,
+}).format(precio);
+---
+
+<section class="lp-hero" aria-labelledby="lp-hero-title" data-hero>
+  <div class="lp-hero__grain" aria-hidden="true"></div>
+  <div class="lp-hero__vignette" aria-hidden="true"></div>
+  <div class="lp-hero__spotlight" aria-hidden="true" data-hero-spotlight></div>
+
+  <div class="lp-hero__content" data-hero-item="content">
+    <p class="lp-hero__kicker" data-hero-item="kicker">
+      <span></span> Perfumería selecta · Costa Rica
+    </p>
+
+    <h1 id="lp-hero-title" class="lp-hero__title" data-hero-item="title">
+      El aroma<br /><em>que te representa.</em>
+    </h1>
+
+    <p class="lp-hero__lead" data-hero-item="lead">
+      Una selección de perfumes originales para convertir cada llegada, encuentro y recuerdo en algo imposible de ignorar.
+    </p>
+
+    <div class="lp-hero__actions" data-hero-item="actions">
+      <a href="#catalogo" class="lp-button lp-button--primary">
+        Explorar perfumes <span>↗</span>
+      </a>
+      <a href={`/producto/${slug}`} class="lp-button lp-button--ghost">
+        Selección del mes
+      </a>
+    </div>
+
+    <div class="lp-hero__proof" data-hero-item="proof">
+      <div><strong>100%</strong><span>Originales</span></div>
+      <div><strong>CR</strong><span>Envíos nacionales</span></div>
+      <div><strong>1:1</strong><span>Asesoría personal</span></div>
+    </div>
+  </div>
+
+  <div class="lp-hero__visual" data-hero-visual>
+    <div class="lp-hero__monogram-wrap" aria-hidden="true">
+      <img src={monogramImage.src} alt="" class="lp-hero__monogram" width="776" height="602" />
+    </div>
+
+    <div class="lp-hero__edition" data-hero-item="edition">
+      <span>LE PARFUM</span>
+      <small>COLLECTION N° 01</small>
+    </div>
+
+    <div class="lp-hero__stage" data-hero-item="halo">
+      <div class="lp-hero__halo" aria-hidden="true"></div>
+      <div class="lp-hero__collage-wrap" data-hero-tilt data-hero-item="collage">
+        <img
+          src={collageImage.src}
+          alt="Selección de perfumes más vendidos de Le Parfum"
+          class="lp-hero__collage"
+          fetchpriority="high"
+          decoding="async"
+          width="615"
+          height="409"
+        />
+        <span class="lp-hero__reflection" aria-hidden="true"></span>
+      </div>
+      <span class="lp-hero__floor" aria-hidden="true"></span>
+    </div>
+
+    <a
+      href={`/producto/${slug}`}
+      class="lp-hero__product-card"
+      aria-label={`Ver ${nombre}`}
+      data-hero-item="card"
+    >
+      <div>
+        <p>{marca}</p>
+        <h2>{nombre}</h2>
+      </div>
+      <strong>{precioFormateado}</strong>
+      <span class="lp-hero__arrow">↗</span>
+    </a>
+
+    <p class="lp-hero__signature" data-hero-item="signature">
+      Tus favoritos.<br /><em>Una sola colección.</em>
+    </p>
+  </div>
+
+  <div class="lp-hero__scroll" data-hero-item="scroll"><span></span> Descubrir</div>
+</section>
+
+<script is:inline>
+  // Red de seguridad, deliberadamente independiente de GSAP: si por lentitud de
+  // red/CPU o un fallo en el bundle de animación el hero no se revela a tiempo,
+  // el contenido no puede quedarse invisible — eso es exactamente el hueco vacío
+  // que aparecía en móvil. No depende de que la importación de GSAP funcione.
+  setTimeout(function () {
+    document.querySelectorAll('[data-hero-item]').forEach(function (el) {
+      if (getComputedStyle(el).opacity === '0') el.style.opacity = '1';
+    });
+  }, 1800);
+</script>
+
+<script>
+  import { initHero } from './hero';
+  initHero();
+</script>

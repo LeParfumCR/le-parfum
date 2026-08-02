@@ -1,0 +1,83 @@
+---
+interface Props {
+  marcas: string[];
+}
+
+const { marcas } = Astro.props;
+---
+
+<div class="tabs" role="tablist" aria-label="Filtrar por marca">
+  <button class="tabs__btn is-active" data-filter="all" role="tab" aria-selected="true">Todos</button>
+  {marcas.map((marca) => (
+    <button class="tabs__btn" data-filter={marca} role="tab" aria-selected="false">{marca}</button>
+  ))}
+</div>
+
+<script>
+  const buttons = document.querySelectorAll<HTMLButtonElement>('.tabs__btn');
+  const cards = document.querySelectorAll<HTMLElement>('[data-marca]');
+
+  buttons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const filter = btn.dataset.filter;
+
+      buttons.forEach((b) => {
+        b.classList.toggle('is-active', b === btn);
+        b.setAttribute('aria-selected', String(b === btn));
+      });
+
+      cards.forEach((card) => {
+        const match = filter === 'all' || card.dataset.marca === filter;
+        card.style.display = match ? '' : 'none';
+      });
+    });
+  });
+</script>
+
+<style>
+  .tabs {
+    display: flex;
+    gap: var(--space-md);
+    flex-wrap: wrap;
+    padding-bottom: var(--space-lg);
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: var(--space-lg);
+  }
+
+  .tabs__btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    padding: 0 0 var(--space-xs);
+    position: relative;
+    transition: color var(--duration-fast) var(--ease-standard);
+    white-space: nowrap;
+  }
+
+  .tabs__btn::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 1px;
+    background: var(--color-text);
+    transform: scaleX(0);
+    transition: transform var(--duration-base) var(--ease-standard);
+  }
+
+  .tabs__btn.is-active {
+    color: var(--color-text);
+  }
+
+  .tabs__btn.is-active::after {
+    transform: scaleX(1);
+  }
+
+  .tabs__btn:hover {
+    color: var(--color-text);
+  }
+</style>

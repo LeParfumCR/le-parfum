@@ -1,0 +1,92 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import config from '../data/config.json';
+---
+
+<Layout
+  title="Envíos y devoluciones"
+  description="Política de envíos, tiempos de entrega, cambios y devoluciones de Le Parfum."
+>
+  <Header />
+
+  <main class="container">
+    <h1>Envíos y devoluciones</h1>
+
+    <h2>Envíos</h2>
+    <p>Hacemos envíos a todo Costa Rica.</p>
+    <ul>
+      <li><strong>GAM (Gran Área Metropolitana):</strong> entrega en 1–2 días hábiles.</li>
+      <li><strong>Resto del país:</strong> entrega en 2–4 días hábiles según la zona.</li>
+      <li>Coordinamos el envío directamente por WhatsApp una vez confirmado tu pedido.</li>
+      <li>El costo de envío se calcula según tu ubicación y se te informa antes de confirmar la compra.</li>
+    </ul>
+
+    <h2>Cambios</h2>
+    <p>
+      Aceptamos cambios dentro de los 5 días naturales posteriores a la
+      entrega, siempre que el producto esté sin abrir, sin uso y en su
+      empaque original. Escribinos con tu número de pedido para coordinar el
+      cambio.
+    </p>
+
+    <h2>Devoluciones</h2>
+    <p>
+      Si tu perfume llega dañado o no corresponde a lo solicitado, contactanos
+      dentro de las 48 horas siguientes a la entrega con fotos del producto y
+      el empaque. Evaluamos cada caso para reembolso o reposición.
+    </p>
+    <p>
+      Por tratarse de productos de perfumería, no aceptamos devoluciones de
+      artículos abiertos o usados, salvo defecto de fábrica comprobado.
+    </p>
+
+    <h2>Garantía de originalidad</h2>
+    <p>
+      Todos nuestros perfumes son 100% originales, adquiridos directamente
+      con proveedores autorizados. Si tenés dudas sobre la autenticidad de tu
+      producto, contactanos y lo resolvemos.
+    </p>
+
+    <h2>¿Dudas?</h2>
+    <p>
+      Escribinos a{' '}
+      {config.email && <a href={`mailto:${config.email}`}>{config.email}</a>}
+      {' '}o por WhatsApp y con gusto te ayudamos.
+    </p>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+  .container {
+    max-width: 720px;
+    margin-inline: auto;
+    padding: var(--space-xl) var(--space-md) var(--space-2xl);
+  }
+
+  h1 {
+    font-size: var(--text-2xl);
+    margin-bottom: var(--space-lg);
+  }
+
+  h2 {
+    font-size: var(--text-lg);
+    margin-top: var(--space-lg);
+    margin-bottom: var(--space-xs);
+  }
+
+  p, li {
+    line-height: 1.7;
+  }
+
+  ul {
+    padding-left: 1.2rem;
+  }
+
+  a {
+    color: var(--color-accent-dark);
+  }
+</style>

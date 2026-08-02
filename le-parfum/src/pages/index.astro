@@ -1,0 +1,63 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/hero/Hero.astro';
+import Footer from '../components/Footer.astro';
+import TopSellers from '../components/TopSellers.astro';
+import CatalogControls from '../components/CatalogControls.astro';
+import ProductCard from '../components/ProductCard.astro';
+import data from '../data/perfumes.json';
+
+const perfumes = data.perfumes;
+const topVentas = perfumes.filter((p) => p.destacado);
+const marcas = [...new Set(perfumes.map((p) => p.marca))];
+const featured = topVentas[0] ?? perfumes[0];
+---
+
+<Layout title="Perfumería de lujo en Costa Rica">
+  <Header />
+  {featured && <Hero {...featured} />}
+
+  <section class="manifesto">
+    <p>Perfumería contemporánea</p>
+    <h2>No vendemos solo aromas.<br /><em>Curamos presencia.</em></h2>
+    <div class="manifesto__copy">
+      <p>Cada fragancia entra a nuestra colección por una razón: identidad, calidad y una estela que permanece mucho después de irte.</p>
+      <a href="/nosotros">Conoce nuestra visión <span>→</span></a>
+    </div>
+  </section>
+
+  <TopSellers perfumes={topVentas.length ? topVentas : perfumes} />
+
+  <main class="container" id="catalogo">
+    <div class="catalog-head">
+      <div><p>La colección</p><h2>Encuentra tu próximo perfume</h2></div>
+      <span>{perfumes.length.toString().padStart(2,'0')} fragancias seleccionadas</span>
+    </div>
+    <CatalogControls marcas={marcas} />
+    <section class="grid" aria-label="Catálogo de perfumes">
+      {perfumes.map((perfume) => <ProductCard {...perfume} />)}
+    </section>
+  </main>
+
+  <section class="service">
+    <div><span>01</span><h3>Originalidad garantizada</h3><p>Productos auténticos y seleccionados cuidadosamente.</p></div>
+    <div><span>02</span><h3>Compra sin complicaciones</h3><p>Atención cercana y métodos de pago simples.</p></div>
+    <div><span>03</span><h3>Entrega nacional</h3><p>Tu fragancia favorita, estés donde estés en Costa Rica.</p></div>
+  </section>
+  <Footer />
+</Layout>
+
+<style>
+  .manifesto{max-width:1400px;margin:clamp(3rem,9vw,9rem) auto;padding:0 clamp(1.25rem,5vw,5rem);display:grid;grid-template-columns:.55fr 1.6fr .75fr;gap:2rem;align-items:start}
+  .manifesto>p,.catalog-head>div>p{font-size:.68rem;letter-spacing:.17em;text-transform:uppercase;color:var(--color-accent-dark);margin:.65rem 0 0}
+  .manifesto h2{font-size:clamp(3.1rem,6.5vw,7rem);line-height:.86;letter-spacing:-.05em}.manifesto h2 em{color:var(--color-accent-dark);font-weight:400}
+  .manifesto__copy{padding-top:1rem;color:var(--color-text-muted);font-size:.9rem}.manifesto__copy a{display:inline-flex;gap:.8rem;margin-top:1.5rem;color:var(--color-text);text-decoration:none;border-bottom:1px solid var(--color-border-strong);padding-bottom:.4rem}
+  .container{max-width:1400px;margin-inline:auto;padding:clamp(5rem,10vw,10rem) clamp(1.25rem,4vw,4rem) 0}
+  .catalog-head{display:flex;justify-content:space-between;align-items:end;gap:2rem;margin-bottom:2.5rem}.catalog-head h2{font-size:clamp(2.7rem,5vw,5.6rem);line-height:.9;letter-spacing:-.045em;max-width:11ch}.catalog-head>span{font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--color-text-muted);padding-bottom:.5rem}
+  .grid{display:grid;grid-template-columns:repeat(5,1fr);gap:clamp(1.5rem,2.5vw,2.5rem) clamp(.9rem,1.6vw,1.4rem);padding-bottom:var(--space-2xl)}
+  .service{max-width:1400px;margin:4rem auto 0;padding:0 clamp(1.25rem,4vw,4rem) 7rem;display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--color-border)}.service div{background:var(--color-bg);padding:clamp(2rem,4vw,4rem)}.service span{font-family:var(--font-display);color:var(--color-accent-dark)}.service h3{font-size:clamp(1.6rem,2.5vw,2.5rem);margin:2.5rem 0 .7rem}.service p{color:var(--color-text-muted);font-size:.85rem;max-width:32ch}
+  @media(max-width:1180px){.grid{grid-template-columns:repeat(4,1fr)}}
+  @media(max-width:900px){.manifesto{grid-template-columns:1fr}.manifesto>p{margin:0}.manifesto__copy{max-width:55ch}.grid{grid-template-columns:repeat(3,1fr);gap:1.4rem .6rem}.service{grid-template-columns:1fr}.catalog-head{align-items:start;flex-direction:column}.catalog-head>span{display:none}}
+  @media(max-width:540px){.grid{gap:1.2rem .5rem}.manifesto{margin-top:4rem}.container{padding-top:6rem}}
+</style>

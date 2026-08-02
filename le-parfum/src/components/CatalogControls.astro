@@ -1,0 +1,277 @@
+---
+interface Props {
+  marcas: string[];
+}
+
+const { marcas } = Astro.props;
+---
+
+<div class="controls" id="catalog-controls">
+  <div class="controls__search">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <circle cx="11" cy="11" r="7"/>
+      <path d="m21 21-4.3-4.3"/>
+    </svg>
+    <input
+      type="text"
+      id="search-input"
+      placeholder="Buscar por nombre o marca..."
+      aria-label="Buscar perfumes"
+      autocomplete="off"
+      inputmode="search"
+    />
+  </div>
+
+  <div class="tabs-outer">
+    <div class="tabs" role="tablist" aria-label="Filtrar por marca">
+      <button class="tabs__btn is-active" data-filter="all" role="tab" aria-selected="true">Todos</button>
+      {marcas.map((marca) => (
+        <button class="tabs__btn" data-filter={marca} role="tab" aria-selected="false">{marca}</button>
+      ))}
+    </div>
+  </div>
+</div>
+
+<p id="no-results" class="no-results" hidden>
+  No encontramos perfumes que coincidan. Prueba con otro nombre o marca.
+</p>
+
+<script>
+  const searchInput = document.querySelector<HTMLInputElement>('#search-input');
+  const buttons = document.querySelectorAll<HTMLButtonElement>('.tabs__btn');
+  const cards = document.querySelectorAll<HTMLElement>('[data-marca]');
+  const noResults = document.querySelector<HTMLElement>('#no-results');
+
+  const state = { marca: 'all', query: '' };
+
+  const normalize = (s: string) =>
+    s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+  function applyFilters() {
+    let visibleCount = 0;
+    let delayIndex = 0;
+
+    cards.forEach((card) => {
+      const cardMarca = card.dataset.marca ?? '';
+      const cardNombre = card.dataset.nombre ?? '';
+
+      const matchesMarca = state.marca === 'all' || cardMarca === state.marca;
+      const matchesQuery =
+        state.query === '' ||
+        normalize(cardNombre).includes(state.query) ||
+        normalize(cardMarca).includes(state.query);
+
+      const visible = matchesMarca && matchesQuery;
+      card.style.display = visible ? '' : 'none';
+
+      // Reintroduce el stagger de entrada cada vez que cambia el filtro, no solo en el load inicial
+      if (visible) {
+        card.style.setProperty('--reveal-delay', `${Math.min(delayIndex, 8) * 45}ms`);
+        card.classList.remove('is-revealed');
+        void card.offsetWidth;
+        card.classList.add('is-revealed');
+        delayIndex++;
+        visibleCount++;
+      }
+    });
+
+    if (noResults) {
+      noResults.hidden = visibleCount > 0;
+    }
+  }
+
+  buttons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      state.marca = btn.dataset.filter ?? 'all';
+
+      buttons.forEach((b) => {
+        b.classList.toggle('is-active', b === btn);
+        b.setAttribute('aria-selected', String(b === btn));
+      });
+
+      // Centra el tab activo en la vista horizontal en móvil
+      btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+
+      applyFilters();
+    });
+  });
+
+  searchInput?.addEventListener('input', () => {
+    state.query = normalize(searchInput.value.trim());
+    applyFilters();
+  });
+
+  // Marca visualmente cuando hay más tabs por descubrir hacia la derecha
+  const tabsOuter = document.querySelector<HTMLElement>('.tabs-outer');
+  const tabsEl = document.querySelector<HTMLElement>('.tabs');
+
+  function updateScrollFade() {
+    if (!tabsOuter || !tabsEl) return;
+    const atEnd = Math.ceil(tabsEl.scrollLeft + tabsEl.clientWidth) >= tabsEl.scrollWidth;
+    const atStart = tabsEl.scrollLeft <= 0;
+    tabsOuter.classList.toggle('is-fade-end', !atEnd);
+    tabsOuter.classList.toggle('is-fade-start', !atStart);
+  }
+
+  tabsEl?.addEventListener('scroll', updateScrollFade, { passive: true });
+  updateScrollFade();
+  window.addEventListener('resize', updateScrollFade);
+</script>
+
+<style>
+  .controls {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    padding-bottom: var(--space-md);
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: var(--space-lg);
+    position: sticky;
+    top: var(--header-height, 74px);
+    z-index: 20;
+    background: var(--color-bg);
+    padding-top: var(--space-sm);
+  }
+
+  .controls__search {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    max-width: 360px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: 0.7em 0.9em;
+    color: var(--color-text-muted);
+    transition: border-color var(--duration-fast) var(--ease-standard),
+      box-shadow var(--duration-fast) var(--ease-standard);
+  }
+
+  .controls__search:focus-within {
+    border-color: var(--color-accent-dark);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 25%, transparent);
+  }
+
+  .controls__search svg {
+    flex-shrink: 0;
+  }
+
+  .controls__search input {
+    border: none;
+    outline: none;
+    background: none;
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    color: var(--color-text);
+    width: 100%;
+  }
+
+  .tabs-outer {
+    position: relative;
+    margin-inline: calc(var(--space-md) * -1);
+  }
+
+  /* Difumina el borde cuando hay más marcas fuera de la vista — insinúa "desliza" sin decirlo */
+  .tabs-outer::before,
+  .tabs-outer::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 28px;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity var(--duration-fast) var(--ease-standard);
+  }
+
+  .tabs-outer::before {
+    left: 0;
+    background: linear-gradient(90deg, var(--color-bg), transparent);
+  }
+
+  .tabs-outer::after {
+    right: 0;
+    background: linear-gradient(270deg, var(--color-bg), transparent);
+  }
+
+  .tabs-outer.is-fade-start::before {
+    opacity: 1;
+  }
+
+  .tabs-outer.is-fade-end::after {
+    opacity: 1;
+  }
+
+  .tabs {
+    display: flex;
+    gap: var(--space-lg);
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+    padding-inline: var(--space-md);
+  }
+
+  .tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tabs__btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    padding: 0.5em 0 0.6em;
+    position: relative;
+    transition: color var(--duration-fast) var(--ease-standard);
+    white-space: nowrap;
+    scroll-snap-align: start;
+  }
+
+  .tabs__btn::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1.5px;
+    background: var(--color-text);
+    transform: scaleX(0);
+    transition: transform var(--duration-base) var(--ease-standard);
+  }
+
+  .tabs__btn.is-active {
+    color: var(--color-text);
+  }
+
+  .tabs__btn.is-active::after {
+    transform: scaleX(1);
+  }
+
+  .tabs__btn:hover {
+    color: var(--color-text);
+  }
+
+  .tabs__btn:active {
+    transform: scale(0.96);
+  }
+
+  .no-results {
+    text-align: center;
+    color: var(--color-text-muted);
+    padding: var(--space-xl) 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tabs {
+      scroll-behavior: auto;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .controls__search {
+      max-width: none;
+    }
+  }
+</style>
