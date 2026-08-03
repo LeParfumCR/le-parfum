@@ -57,8 +57,12 @@ import config from '../data/config.json';
 
     <h2>Contacto</h2>
     <p>
-      Para consultas sobre estos términos, escribinos a{' '}
-      {config.email && <a href={`mailto:${config.email}`}>{config.email}</a>}.
+      Para consultas sobre estos términos, escribinos por WhatsApp al{' '}
+      {config.whatsappNumber && (
+        <a href={`https://wa.me/${config.whatsappNumber}`} target="_blank" rel="noopener noreferrer">
+          {config.whatsappDisplay || config.whatsappNumber}
+        </a>
+      )}.
     </p>
   </main>
 

@@ -1,0 +1,94 @@
+---
+// Banner de oferta — entrega gratis en Cartago centro. Vive entre el hero y el
+// manifiesto: visible de inmediato, pero sin competir con la apertura cinematográfica.
+import config from '../data/config.json';
+
+const mensaje = encodeURIComponent(
+  'Hola! Vi que hay entrega gratis en Cartago centro, quiero hacer un pedido 🙂'
+);
+const whatsappUrl = `https://wa.me/${config.whatsappNumber}?text=${mensaje}`;
+---
+
+<a href={whatsappUrl} target="_blank" rel="noopener noreferrer" class="promo">
+  <span class="promo__badge"><span class="promo__dot"></span> Oferta por tiempo limitado</span>
+  <span class="promo__claim">Entrega <strong>GRATIS</strong> en Cartago centro</span>
+  <span class="promo__cta">Escribinos por WhatsApp <span>↗</span></span>
+</a>
+
+<style>
+  .promo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem 1.6rem;
+    text-decoration: none;
+    color: var(--color-bg);
+    background: linear-gradient(100deg, var(--color-accent-dark), var(--color-accent) 55%, var(--color-accent-dark));
+    background-size: 220% 100%;
+    animation: promo-shift 6s ease-in-out infinite;
+    padding: 0.85rem clamp(1.25rem, 4vw, 4rem);
+    text-align: center;
+  }
+
+  [data-theme='dark'] .promo {
+    color: #050505;
+  }
+
+  @keyframes promo-shift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  .promo__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 600;
+    opacity: 0.85;
+  }
+
+  .promo__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    animation: promo-pulse 1.6s ease-in-out infinite;
+  }
+
+  @keyframes promo-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(1.4); }
+  }
+
+  .promo__claim {
+    font-family: var(--font-display);
+    font-size: clamp(0.95rem, 1.6vw, 1.15rem);
+  }
+
+  .promo__cta {
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    white-space: nowrap;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .promo,
+    .promo__dot {
+      animation: none;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .promo {
+      flex-direction: column;
+      gap: 0.3rem;
+      padding: 0.9rem 1.25rem;
+    }
+  }
+</style>

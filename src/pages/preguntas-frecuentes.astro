@@ -18,17 +18,12 @@ const faqs = [
   {
     pregunta: '¿Cómo pago?',
     respuesta:
-      'Coordinamos el pago directamente por WhatsApp: aceptamos SINPE Móvil y tarjeta. Te confirmamos el total, incluyendo el envío, antes de procesar el pedido.',
+      'Coordinamos el pago directamente por WhatsApp: aceptamos SINPE, transferencia bancaria (BAC) y efectivo. Te confirmamos el total, incluyendo el envío, antes de procesar el pedido.',
   },
   {
-    pregunta: '¿Puedo hacer cambios si el perfume no me convence?',
+    pregunta: '¿Es cierto que hay entrega gratis?',
     respuesta:
-      'Sí, dentro de los 5 días naturales posteriores a la entrega, siempre que el producto esté sin abrir y en su empaque original.',
-  },
-  {
-    pregunta: '¿Qué hago si mi pedido llega dañado?',
-    respuesta:
-      'Escribinos dentro de las 48 horas siguientes a la entrega con fotos del producto y el empaque. Evaluamos cada caso para reembolso o reposición.',
+      'Sí, por tiempo limitado ofrecemos entrega gratis en Cartago centro. Escribinos por WhatsApp con tu dirección y te confirmamos si aplica.',
   },
   {
     pregunta: '¿Cómo hago un pedido?',
@@ -60,8 +55,12 @@ const schema = {
     <h1>Preguntas frecuentes</h1>
     <p class="lead">
       Todo lo que necesitás saber antes de comprar. ¿No encontrás tu
-      respuesta? Escribinos a{' '}
-      {config.email && <a href={`mailto:${config.email}`}>{config.email}</a>}.
+      respuesta? Escribinos por WhatsApp al{' '}
+      {config.whatsappNumber && (
+        <a href={`https://wa.me/${config.whatsappNumber}`} target="_blank" rel="noopener noreferrer">
+          {config.whatsappDisplay || config.whatsappNumber}
+        </a>
+      )}.
     </p>
 
     <div class="faq-list">

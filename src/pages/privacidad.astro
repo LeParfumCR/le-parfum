@@ -50,8 +50,12 @@ import config from '../data/config.json';
     <h2>Tus derechos</h2>
     <p>
       Podés solicitar en cualquier momento que actualicemos o eliminemos tus
-      datos personales escribiéndonos a{' '}
-      {config.email && <a href={`mailto:${config.email}`}>{config.email}</a>}.
+      datos personales escribiéndonos por WhatsApp al{' '}
+      {config.whatsappNumber && (
+        <a href={`https://wa.me/${config.whatsappNumber}`} target="_blank" rel="noopener noreferrer">
+          {config.whatsappDisplay || config.whatsappNumber}
+        </a>
+      )}.
     </p>
 
     <h2>Cambios a esta política</h2>
@@ -62,8 +66,12 @@ import config from '../data/config.json';
 
     <h2>Contacto</h2>
     <p>
-      Si tenés dudas sobre esta política, escribinos a{' '}
-      {config.email && <a href={`mailto:${config.email}`}>{config.email}</a>}.
+      Si tenés dudas sobre esta política, escribinos por WhatsApp al{' '}
+      {config.whatsappNumber && (
+        <a href={`https://wa.me/${config.whatsappNumber}`} target="_blank" rel="noopener noreferrer">
+          {config.whatsappDisplay || config.whatsappNumber}
+        </a>
+      )}.
     </p>
   </main>
 

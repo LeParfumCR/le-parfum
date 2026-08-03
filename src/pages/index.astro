@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Hero from '../components/hero/Hero.astro';
+import PromoBanner from '../components/PromoBanner.astro';
 import Footer from '../components/Footer.astro';
 import TopSellers from '../components/TopSellers.astro';
 import CatalogControls from '../components/CatalogControls.astro';
@@ -17,12 +18,13 @@ const featured = topVentas[0] ?? perfumes[0];
 <Layout title="Perfumería de lujo en Costa Rica">
   <Header />
   {featured && <Hero {...featured} />}
+  <PromoBanner />
 
   <section class="manifesto">
     <p>Perfumería contemporánea</p>
-    <h2>No vendemos solo aromas.<br /><em>Curamos presencia.</em></h2>
+    <h2>No vendemos solo aromas.<br /><em>Elegimos con criterio.</em></h2>
     <div class="manifesto__copy">
-      <p>Cada fragancia entra a nuestra colección por una razón: identidad, calidad y una estela que permanece mucho después de irte.</p>
+      <p>Cada fragancia entra a nuestra colección por una razón: calidad, procedencia y carácter — no por tendencia.</p>
       <a href="/nosotros">Conoce nuestra visión <span>→</span></a>
     </div>
   </section>

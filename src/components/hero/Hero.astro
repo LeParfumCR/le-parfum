@@ -4,6 +4,7 @@
 import './Hero.css';
 import collageImage from '../../assets/brand/bestsellers-collage.webp';
 import monogramImage from '../../assets/brand/le-parfum-monogram.webp';
+import config from '../../data/config.json';
 
 interface Props {
   nombre: string;
@@ -14,13 +15,14 @@ interface Props {
   marca?: string;
 }
 
-const { nombre, precio, moneda, slug, marca = 'Maison sélectionnée' } = Astro.props;
 
-const precioFormateado = new Intl.NumberFormat('es-CR', {
-  style: 'currency',
-  currency: moneda,
-  maximumFractionDigits: 0,
-}).format(precio);
+const mensajeOferta = encodeURIComponent('Hola! Quiero saber más sobre la oferta del mes 🙂');
+const whatsappOfertaUrl = `https://wa.me/${config.whatsappNumber}?text=${mensajeOferta}`;
+
+const mensajeAsesoria = encodeURIComponent(
+  'Hola! Me gustaría que me recomienden un perfume 🙂'
+);
+const whatsappAsesoriaUrl = `https://wa.me/${config.whatsappNumber}?text=${mensajeAsesoria}`;
 ---
 
 <section class="lp-hero" aria-labelledby="lp-hero-title" data-hero>
@@ -38,15 +40,16 @@ const precioFormateado = new Intl.NumberFormat('es-CR', {
     </h1>
 
     <p class="lp-hero__lead" data-hero-item="lead">
-      Una selección de perfumes originales para convertir cada llegada, encuentro y recuerdo en algo imposible de ignorar.
+      Una selección de perfumes originales, elegidos uno por uno por calidad y
+      procedencia — no por tendencia.
     </p>
 
     <div class="lp-hero__actions" data-hero-item="actions">
       <a href="#catalogo" class="lp-button lp-button--primary">
         Explorar perfumes <span>↗</span>
       </a>
-      <a href={`/producto/${slug}`} class="lp-button lp-button--ghost">
-        Selección del mes
+      <a href={whatsappOfertaUrl} target="_blank" rel="noopener noreferrer" class="lp-button lp-button--ghost">
+        Oferta del mes
       </a>
     </div>
 
@@ -85,16 +88,18 @@ const precioFormateado = new Intl.NumberFormat('es-CR', {
     </div>
 
     <a
-      href={`/producto/${slug}`}
+      href={whatsappAsesoriaUrl}
+      target="_blank"
+      rel="noopener noreferrer"
       class="lp-hero__product-card"
-      aria-label={`Ver ${nombre}`}
+      aria-label="Pedir una recomendación por WhatsApp"
       data-hero-item="card"
     >
       <div>
-        <p>{marca}</p>
-        <h2>{nombre}</h2>
+        <p>Asesoría personalizada</p>
+        <h2>¿No sabés cuál elegir?</h2>
       </div>
-      <strong>{precioFormateado}</strong>
+      <strong>Escribinos</strong>
       <span class="lp-hero__arrow">↗</span>
     </a>
 
