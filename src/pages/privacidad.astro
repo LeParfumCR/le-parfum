@@ -1,0 +1,108 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import config from '../data/config.json';
+---
+
+<Layout
+  title="Política de privacidad"
+  description="Cómo Le Parfum recopila, usa y protege tus datos personales."
+>
+  <Header />
+
+  <main class="container">
+    <h1>Política de privacidad</h1>
+    <p class="updated">Última actualización: agosto de 2026</p>
+
+    <p>
+      En Le Parfum respetamos tu privacidad. Esta política explica qué
+      información recopilamos cuando visitás nuestro sitio o nos contactás, y
+      cómo la usamos.
+    </p>
+
+    <h2>Información que recopilamos</h2>
+    <p>
+      Cuando nos escribís por WhatsApp o correo, recibimos los datos que vos
+      decidís compartir (nombre, número de contacto, preferencias de
+      producto). Si el sitio incorpora analítica web, también podemos
+      recopilar datos de uso anónimos, como páginas visitadas y tipo de
+      dispositivo.
+    </p>
+
+    <h2>Uso de la información</h2>
+    <p>Usamos tus datos únicamente para:</p>
+    <ul>
+      <li>Responder tus consultas y coordinar compras.</li>
+      <li>Mejorar nuestro catálogo y la experiencia del sitio.</li>
+      <li>Enviarte información que hayas solicitado (por ejemplo, ofertas si te suscribís a novedades).</li>
+    </ul>
+    <p>No vendemos ni compartimos tu información con terceros con fines comerciales.</p>
+
+    <h2>Cookies</h2>
+    <p>
+      Si en el futuro usamos herramientas de analítica o publicidad, este
+      sitio podría emplear cookies para medir tráfico y mejorar la
+      experiencia. Podés desactivar las cookies desde la configuración de tu
+      navegador en cualquier momento.
+    </p>
+
+    <h2>Tus derechos</h2>
+    <p>
+      Podés solicitar en cualquier momento que actualicemos o eliminemos tus
+      datos personales escribiéndonos a{' '}
+      {config.email && <a href={`mailto:${config.email}`}>{config.email}</a>}.
+    </p>
+
+    <h2>Cambios a esta política</h2>
+    <p>
+      Podemos actualizar esta política ocasionalmente. Cualquier cambio se
+      reflejará en esta misma página con su fecha de actualización.
+    </p>
+
+    <h2>Contacto</h2>
+    <p>
+      Si tenés dudas sobre esta política, escribinos a{' '}
+      {config.email && <a href={`mailto:${config.email}`}>{config.email}</a>}.
+    </p>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+  .container {
+    max-width: 720px;
+    margin-inline: auto;
+    padding: var(--space-xl) var(--space-md) var(--space-2xl);
+  }
+
+  h1 {
+    font-size: var(--text-2xl);
+    margin-bottom: var(--space-xs);
+  }
+
+  .updated {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-lg);
+  }
+
+  h2 {
+    font-size: var(--text-lg);
+    margin-top: var(--space-lg);
+    margin-bottom: var(--space-xs);
+  }
+
+  p, li {
+    line-height: 1.7;
+  }
+
+  ul {
+    padding-left: 1.2rem;
+  }
+
+  a {
+    color: var(--color-accent-dark);
+  }
+</style>

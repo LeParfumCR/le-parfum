@@ -1,0 +1,409 @@
+---
+interface Props {
+  nombre: string;
+  precio: number;
+  moneda: string;
+  imagen: string;
+  disponible: boolean;
+  slug: string;
+  marca: string;
+  badge?: string | null;
+}
+
+const { nombre, precio, moneda, imagen, disponible, slug, marca, badge } = Astro.props;
+
+const badgeLabels: Record<string, string> = {
+  'mas-vendido': 'Más vendido',
+  'nuevo': 'Nuevo',
+  'exclusivo': 'Exclusivo',
+};
+
+const precioFormateado = new Intl.NumberFormat('es-CR', {
+  style: 'currency',
+  currency: moneda,
+  maximumFractionDigits: 0,
+}).format(precio);
+---
+
+<a href={`/producto/${slug}`} class="card" class:list={{ 'is-unavailable': !disponible }} data-marca={marca} data-nombre={nombre}>
+  {badge && badgeLabels[badge] && (
+    <span class="card__badge">{badgeLabels[badge]}</span>
+  )}
+  <div class="card__image-wrap">
+    <span class="card__waft" aria-hidden="true"></span>
+    <img src={imagen} alt={nombre} loading="lazy" decoding="async" width="400" height="533" class="card__image skeleton" />
+    {!disponible && <span class="card__overlay">Agotado</span>}
+    {disponible && (
+      <button
+        type="button"
+        class="card__add"
+        aria-label={`Agregar ${nombre} al carrito`}
+        data-add-to-cart
+        data-slug={slug}
+        data-nombre={nombre}
+        data-marca={marca}
+        data-precio={precio}
+        data-moneda={moneda}
+        data-imagen={imagen}
+      >
+        <svg class="card__add-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M3 4h2l1.4 11.6a2 2 0 0 0 2 1.9h8.7a2 2 0 0 0 2-1.7L20.5 8H6.2" />
+          <circle cx="9" cy="20" r="1.2" fill="currentColor" stroke="none" />
+          <circle cx="17" cy="20" r="1.2" fill="currentColor" stroke="none" />
+        </svg>
+        <svg class="card__add-check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 12l5 5L20 6" />
+        </svg>
+      </button>
+    )}
+  </div>
+  <h3 class="card__name">{nombre}</h3>
+  <p class="card__marca">{marca}</p>
+  <p class="card__price">{precioFormateado}</p>
+</a>
+
+<script>
+  import { addToCart } from '../scripts/cart.ts';
+
+  document.querySelectorAll<HTMLButtonElement>('[data-add-to-cart]').forEach((btn) => {
+    let resetTimer: ReturnType<typeof setTimeout>;
+
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      addToCart({
+        slug: btn.dataset.slug!,
+        nombre: btn.dataset.nombre!,
+        marca: btn.dataset.marca!,
+        precio: Number(btn.dataset.precio),
+        moneda: btn.dataset.moneda!,
+        imagen: btn.dataset.imagen!,
+      });
+
+      clearTimeout(resetTimer);
+      btn.classList.add('is-added');
+      resetTimer = setTimeout(() => btn.classList.remove('is-added'), 1100);
+    });
+  });
+
+  document.querySelectorAll<HTMLImageElement>('.card__image.skeleton').forEach((img) => {
+    const clear = () => img.classList.remove('skeleton');
+    if (img.complete) clear();
+    else img.addEventListener('load', clear, { once: true });
+  });
+
+  // Aparición en cascada al hacer scroll — cada card revela apenas entra en viewport,
+  // con un pequeño delay basado en su posición para que se sienta como una ola, no un parpadeo simultáneo
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const cardsToReveal = document.querySelectorAll<HTMLElement>('.card:not(.is-revealed)');
+
+  if (!prefersReducedMotion && 'IntersectionObserver' in window && cardsToReveal.length) {
+    const columns = window.innerWidth < 900 ? 2 : 4;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const target = entry.target as HTMLElement;
+          const parent = target.parentElement;
+          const index = parent ? Array.from(parent.children).indexOf(target) : 0;
+          const delay = (index % columns) * 70;
+          target.style.setProperty('--reveal-delay', `${delay}ms`);
+          target.classList.add('is-revealed');
+          observer.unobserve(target);
+        });
+      },
+      { threshold: 0.15, rootMargin: '0px 0px -40px 0px' }
+    );
+
+    cardsToReveal.forEach((card) => observer.observe(card));
+  } else {
+    cardsToReveal.forEach((card) => card.classList.add('is-revealed'));
+  }
+</script>
+
+<style>
+  .card {
+    display: block;
+    text-decoration: none;
+    color: var(--color-text);
+    position: relative;
+    opacity: 0;
+    transform: translateY(18px);
+    transition: transform var(--duration-base) var(--ease-standard),
+      opacity 500ms var(--ease-standard);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+
+  .card.is-revealed {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .card:hover {
+      transform: translateY(-4px);
+    }
+  }
+
+  /* En táctil no hay hover: el feedback es una compresión breve al soltar el dedo */
+  @media (hover: none) {
+    .card:active {
+      transform: scale(0.98);
+      transition-duration: var(--duration-fast);
+    }
+  }
+
+  .card__badge {
+    position: absolute;
+    top: var(--space-sm);
+    left: var(--space-sm);
+    z-index: 1;
+    background: var(--color-bg-elevated);
+    color: var(--color-accent-dark);
+    font-size: var(--text-xs);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 0.35em 0.75em;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border);
+  }
+
+  .card__image-wrap {
+    position: relative;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    background: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-sm);
+    box-shadow: var(--shadow-subtle);
+    transition: box-shadow var(--duration-base) var(--ease-standard);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .card:hover .card__image-wrap {
+      box-shadow: var(--shadow-hover);
+    }
+  }
+
+  /* Microreflejo: un cristal real nunca es perfectamente mate. Una franja diagonal
+     de luz, estática y casi imperceptible, sugiere una superficie pulida sin
+     convertirse en un efecto "shine" animado de plantilla. */
+  .card__image-wrap::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background: linear-gradient(
+      115deg,
+      rgba(255, 255, 255, 0.14) 0%,
+      rgba(255, 255, 255, 0) 22%,
+      rgba(255, 255, 255, 0) 78%,
+      rgba(255, 255, 255, 0.05) 100%
+    );
+  }
+
+  [data-theme='dark'] .card__image-wrap::before {
+    background: linear-gradient(
+      115deg,
+      rgba(255, 255, 255, 0.08) 0%,
+      rgba(255, 255, 255, 0) 22%,
+      rgba(255, 255, 255, 0) 78%,
+      rgba(255, 255, 255, 0.03) 100%
+    );
+  }
+
+  .card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--duration-base) var(--ease-standard);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .card:hover .card__image {
+      transform: scale(1.03);
+    }
+  }
+
+  /* Elemento firma: halo que se difunde como una fragancia al expandirse */
+  .card__waft {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: radial-gradient(circle at 50% 45%, var(--color-accent) 0%, transparent 60%);
+    opacity: 0;
+    transform: scale(0.6);
+    transition: opacity 700ms var(--ease-standard), transform 900ms var(--ease-standard);
+  }
+
+  .card:hover .card__waft {
+    opacity: 0.16;
+    transform: scale(1.4);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card__waft {
+      transition: opacity var(--duration-fast) linear;
+      transform: none;
+    }
+    .card {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+
+  .card.is-unavailable .card__image {
+    filter: grayscale(0.6);
+    opacity: 0.6;
+  }
+
+  .card__add {
+    position: absolute;
+    bottom: var(--space-xs);
+    right: var(--space-xs);
+    z-index: 1;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: none;
+    background: var(--color-bg-elevated);
+    color: var(--color-text);
+    box-shadow: var(--shadow-subtle);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity var(--duration-fast) var(--ease-standard),
+      transform var(--duration-fast) var(--ease-standard),
+      background var(--duration-fast) var(--ease-standard),
+      color var(--duration-fast) var(--ease-standard);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .card:hover .card__add,
+    .card__add:focus-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .card__add:hover {
+      background: var(--color-text);
+      color: var(--color-bg-elevated);
+    }
+  }
+
+  .card__add.is-added {
+    background: var(--color-text);
+    color: var(--color-bg-elevated);
+  }
+
+  .card__add:active {
+    transform: scale(0.9);
+  }
+
+  /* En táctil el botón siempre está visible y es más grande — cumple el mínimo de 44px recomendado */
+  @media (hover: none) {
+    .card__add {
+      opacity: 1;
+      transform: none;
+      width: 40px;
+      height: 40px;
+    }
+
+    .card__add:active {
+      transform: scale(0.9);
+    }
+  }
+
+  .card__add-icon,
+  .card__add-check {
+    position: absolute;
+    transition: opacity 220ms var(--ease-standard),
+      transform 220ms var(--ease-standard);
+  }
+
+  .card__add-check {
+    opacity: 0;
+    transform: scale(0.4) rotate(-20deg);
+  }
+
+  .card__add-icon {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+
+  /* Al agregar, el carrito se convierte brevemente en un check — confirma la acción sin necesitar texto */
+  .card__add.is-added .card__add-icon {
+    opacity: 0;
+    transform: scale(0.4) rotate(20deg);
+  }
+
+  .card__add.is-added .card__add-check {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card__add-icon, .card__add-check {
+      transition: opacity var(--duration-fast) linear;
+      transform: none !important;
+    }
+  }
+
+  .card__overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-bg-elevated);
+    background: rgba(26, 26, 26, 0.55);
+    font-size: var(--text-sm);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .card__name {
+    font-size: var(--text-lg);
+    margin-bottom: 0.15em;
+  }
+
+  .card__marca {
+    font-size: var(--text-xs);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-accent-dark);
+    margin: 0 0 0.3em;
+  }
+
+  .card__price {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+
+  @media (max-width: 900px) {
+    .card__name {
+      font-size: 0.95rem;
+      line-height: 1.25;
+    }
+    .card__marca {
+      font-size: 0.65rem;
+    }
+    .card__price {
+      font-size: 0.8rem;
+    }
+    .card__badge {
+      font-size: 0.6rem;
+      padding: 0.3em 0.6em;
+    }
+  }
+</style>

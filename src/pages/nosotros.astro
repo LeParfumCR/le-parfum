@@ -1,0 +1,87 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout
+  title="Nosotros"
+  description="Conoce la historia y filosofía de Le Parfum, perfumería de lujo en Costa Rica."
+>
+  <Header />
+
+  <main class="container">
+    <p class="kicker">Nuestra visión</p>
+    <h1>No vendemos solo aromas.<br /><em>Curamos presencia.</em></h1>
+
+    <div class="body">
+      <p class="lead">
+        Le Parfum nace de una idea simple: que encontrar una fragancia que te represente
+        no debería sentirse abrumador.
+      </p>
+      <p>
+        Seleccionamos cuidadosamente cada perfume de nuestro catálogo, priorizando
+        calidad, procedencia y carácter por encima de tendencias pasajeras. Cada
+        fragancia entra a nuestra colección por una razón — identidad, calidad y una
+        estela que permanece mucho después de irte.
+      </p>
+    </div>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+  .container {
+    max-width: 1400px;
+    margin-inline: auto;
+    padding: clamp(6rem, 12vw, 11rem) clamp(1.25rem, 4vw, 4rem) var(--space-2xl);
+  }
+
+  .kicker {
+    font-size: 0.7rem;
+    letter-spacing: 0.17em;
+    text-transform: uppercase;
+    color: var(--color-accent-dark);
+    margin: 0 0 1.25rem;
+  }
+
+  h1 {
+    font-size: clamp(2.8rem, 6vw, 5.6rem);
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    max-width: 16ch;
+    margin: 0 0 clamp(3rem, 6vw, 5rem);
+  }
+
+  h1 em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--color-accent-dark);
+  }
+
+  .body {
+    max-width: 60ch;
+    padding-top: var(--space-sm);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .lead {
+    font-size: var(--text-lg);
+    color: var(--color-text);
+    line-height: 1.6;
+    margin: var(--space-lg) 0 var(--space-md);
+  }
+
+  .body p:not(.lead) {
+    color: var(--color-text-muted);
+    line-height: 1.75;
+    font-size: var(--text-base);
+  }
+
+  @media (max-width: 640px) {
+    .body {
+      padding-top: var(--space-xs);
+    }
+  }
+</style>

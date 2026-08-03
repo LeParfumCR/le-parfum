@@ -1,0 +1,436 @@
+/*
+  Le Parfum — Sistema de diseño
+  Dirección: lujo silencioso. Base neutra, un solo acento cálido,
+  serif editorial para presencia + sans limpia para funcionalidad.
+*/
+
+:root {
+
+  /* COLORS */
+
+  --color-bg: #f7f4ee;
+  --color-bg-elevated: rgba(255, 255, 255, .72);
+
+  --color-text: #161616;
+  --color-text-muted: #6d6b67;
+
+  --color-border: rgba(0, 0, 0, .08);
+  --color-border-strong: rgba(0, 0, 0, .16);
+
+  --color-accent: #d5b06b;
+  --color-accent-dark: #b88a3c;
+
+  --color-unavailable: #6e6e6e;
+
+  /* TYPO SCALE — restaurada: varios componentes (Header, TopSellers, CatalogControls, ProductCard)
+     dependen de esta escala para tamaño de texto; sin ella el font-size cae al valor por defecto del navegador. */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.75rem;
+  --text-2xl: 2.5rem;
+  --text-3xl: 3.5rem;
+
+  /* SPACING SCALE — restaurada: sin esto, todo gap/padding/margin que usa var(--space-*) colapsa a 0. */
+  --space-xs: 0.5rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2.5rem;
+  --space-xl: 4rem;
+  --space-2xl: 6rem;
+
+  /* TYPO */
+
+  --font-display: 'Cormorant Garamond', serif;
+  --font-body: 'Inter', sans-serif;
+
+  /* RADIUS */
+
+  --radius-sm: 8px;
+  --radius-md: 22px;
+  --radius-lg: 32px;
+
+  /* SHADOWS */
+
+  --shadow-subtle:
+    0 10px 30px rgba(0, 0, 0, .05);
+
+  --shadow-hover:
+    0 30px 80px rgba(0, 0, 0, .12);
+
+  --shadow-glow:
+    0 0 120px rgba(213, 176, 107, .18);
+
+  /* ANIMATION */
+
+  --ease-standard: cubic-bezier(.22, 1, .36, 1);
+
+  --ease-luxury: cubic-bezier(.16, 1, .3, 1);
+
+  --duration-fast: .2s;
+  --duration-base: .55s;
+
+  /* LUXURY EFFECTS */
+  --luxury-glow:
+    radial-gradient(circle,
+      rgba(213, 176, 107, .18),
+      transparent 70%);
+  --luxury-card:
+    linear-gradient(180deg,
+      rgba(255, 255, 255, .85),
+      rgba(255, 255, 255, .65));
+
+}
+
+/* Modo oscuro — mismo sistema, invertido con cuidado de mantener el acento cálido legible */
+[data-theme="dark"] {
+
+  --color-bg: #050505;
+
+  --color-bg-elevated:
+    rgba(15, 15, 15, .72);
+
+  --color-text: #fafafa;
+
+  --color-text-muted: #a5a5a5;
+
+  --color-border:
+    rgba(255, 255, 255, .08);
+
+  --color-border-strong:
+    rgba(255, 255, 255, .15);
+
+  --color-accent: #e2bf84;
+
+  --color-accent-dark: #ffd79a;
+
+  --shadow-subtle:
+    0 12px 30px rgba(0, 0, 0, .45);
+
+  --shadow-hover:
+    0 35px 100px rgba(0, 0, 0, .65);
+
+  --shadow-glow:
+    0 0 160px rgba(226, 191, 132, .18);
+
+  /* CINEMATIC DARK MODE */
+  --luxury-glow:
+    radial-gradient(circle,
+      rgba(226, 191, 132, .30),
+      transparent 70%);
+  --luxury-card:
+    linear-gradient(180deg,
+      rgba(255, 255, 255, .05),
+      rgba(255, 255, 255, .02));
+
+  background:
+
+    radial-gradient(circle at top right,
+      rgba(226, 191, 132, .08),
+      transparent 35%),
+
+    radial-gradient(circle at bottom left,
+      rgba(255, 255, 255, .03),
+      transparent 40%),
+
+    #050505;
+
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+
+  margin: 0;
+
+  overflow-x: hidden;
+
+  font-family: var(--font-body);
+
+  background: var(--color-bg);
+
+  color: var(--color-text);
+
+  transition:
+    background-color .6s var(--ease-luxury),
+    color .6s var(--ease-luxury),
+    background-image .6s var(--ease-luxury);
+
+  /* Bug corregido: este gradiente (glow blanco arriba-izquierda) era incondicional,
+     así que seguía pintándose incluso en modo oscuro — es el parche gris/blanco
+     visible sobre el hero oscuro. Ahora vive solo en modo claro. */
+  background-image:
+
+    radial-gradient(circle at 10% 0%,
+      rgba(255, 255, 255, .85),
+      transparent 25%),
+
+    radial-gradient(circle at 100% 100%,
+      rgba(212, 175, 55, .08),
+      transparent 30%);
+
+}
+
+[data-theme="dark"] body {
+
+  /* Modo oscuro tiene su propio glow, mucho más discreto y cálido —
+     coherente con --luxury-glow en vez de heredar el radial claro. */
+  background-image:
+
+    radial-gradient(circle at 12% -4%,
+      rgba(226, 191, 132, .05),
+      transparent 30%),
+
+    radial-gradient(circle at 100% 100%,
+      rgba(226, 191, 132, .05),
+      transparent 30%);
+
+}
+
+/* Skeleton loader — shimmer reutilizable para imágenes y bloques en carga */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-border);
+}
+
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.35) 50%,
+      transparent 70%);
+  transform: translateX(-100%);
+  animation: shimmer 1.4s infinite;
+}
+
+[data-theme='dark'] .skeleton::after {
+  background: linear-gradient(100deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.08) 50%,
+      transparent 70%);
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton::after {
+    animation: none;
+  }
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+a {
+  color: inherit;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent-dark);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+::selection {
+  background: var(--color-accent);
+  color: #111;
+}
+
+[data-theme="dark"] .glass {
+
+  background:
+    rgba(20, 20, 20, .55);
+
+  backdrop-filter:
+    blur(24px);
+
+  border:
+    1px solid rgba(255, 255, 255, .08);
+
+}
+
+::-webkit-scrollbar {
+
+  width: 10px;
+
+}
+
+::-webkit-scrollbar-track {
+
+  background: transparent;
+
+}
+
+::-webkit-scrollbar-thumb {
+
+  background:
+    rgba(180, 180, 180, .25);
+
+  border-radius: 100px;
+
+}
+
+::-webkit-scrollbar-thumb:hover {
+
+  background:
+    var(--color-accent);
+
+}
+
+/* =========================
+   LUXURY PARTICLES
+========================= */
+body::before {
+
+  content: "";
+
+  position: fixed;
+
+  inset: 0;
+
+  pointer-events: none;
+
+  z-index: 1;
+
+  opacity: 0;
+
+  transition: opacity .6s var(--ease-luxury);
+
+  background-image:
+    radial-gradient(rgba(255, 255, 255, .04) 1px,
+      transparent 1px);
+
+  background-size:
+    180px 180px;
+
+}
+
+[data-theme="dark"] body::before {
+
+  opacity: .35;
+
+}
+
+/* =========================
+   HERO CINEMATIC GLOW
+========================= */
+
+.hero-luxury-glow {
+
+  position: absolute;
+
+  inset: 0;
+
+  pointer-events: none;
+
+  opacity: 0;
+
+  transition:
+    opacity .6s var(--ease-luxury);
+
+  background: var(--luxury-glow);
+
+  filter: blur(120px);
+
+}
+
+[data-theme="dark"] .hero-luxury-glow {
+
+  opacity: 1;
+
+}
+
+/* =========================
+   PREMIUM CARDS
+   Nota de arquitectura: antes apuntaba a ".product-card", una clase que no
+   existe en ningún componente (ProductCard.astro usa ".card"). El selector
+   nunca coincidía y todo este bloque era CSS muerto — las cards nunca
+   recibieron cristal, glow ni profundidad en modo oscuro. Corregido para
+   apuntar al wrap real de la imagen, que es donde vive la superficie física.
+========================= */
+
+[data-theme="dark"] .card__image-wrap {
+
+  background:
+    var(--luxury-card);
+
+  border:
+    1px solid rgba(255, 255, 255, .08);
+
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, .55);
+
+}
+
+[data-theme="dark"] .card:hover .card__image-wrap {
+
+  box-shadow:
+    0 35px 80px rgba(0, 0, 0, .75);
+
+}
+
+/* =========================
+   LUXURY BUTTONS
+========================= */
+
+[data-theme="dark"] .btn-primary {
+
+  background:
+    linear-gradient(135deg,
+      #e2bf84,
+      #c39a56);
+
+  color:
+    #111;
+
+  border:
+    none;
+
+  box-shadow:
+    0 10px 30px rgba(226, 191, 132, .25);
+
+}
+
+[data-theme="dark"] .btn-primary:hover {
+
+  transform:
+    translateY(-2px);
+
+  box-shadow:
+    0 20px 45px rgba(226, 191, 132, .35);
+
+}

@@ -1,0 +1,65 @@
+---
+import ProductCard from './ProductCard.astro';
+
+interface Perfume {
+  id: string;
+  slug: string;
+  nombre: string;
+  marca: string;
+  precio: number;
+  moneda: string;
+  imagen: string;
+  disponible: boolean;
+  destacado?: boolean;
+  badge?: string | null;
+}
+
+interface Props {
+  actual: Perfume;
+  todos: Perfume[];
+}
+
+const { actual, todos } = Astro.props;
+
+// Prioriza misma marca; completa con el resto del catálogo si no alcanza.
+const mismaMarca = todos.filter((p) => p.slug !== actual.slug && p.marca === actual.marca);
+const otros = todos.filter((p) => p.slug !== actual.slug && p.marca !== actual.marca);
+const relacionados = [...mismaMarca, ...otros].slice(0, 4);
+---
+
+{relacionados.length > 0 && (
+  <section class="related" aria-label="También te puede gustar">
+    <h2 class="related__heading">También te puede gustar</h2>
+    <div class="related__grid">
+      {relacionados.map((p) => (
+        <ProductCard {...p} />
+      ))}
+    </div>
+  </section>
+)}
+
+<style>
+  .related {
+    max-width: 1200px;
+    margin: var(--space-2xl) auto 0;
+    padding: 0 var(--space-md);
+  }
+
+  .related__heading {
+    font-size: var(--text-xl);
+    margin-bottom: var(--space-md);
+  }
+
+  .related__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-lg) var(--space-md);
+  }
+
+  @media (max-width: 900px) {
+    .related__grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-md) var(--space-sm);
+    }
+  }
+</style>

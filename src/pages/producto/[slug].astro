@@ -1,0 +1,294 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import RelatedProducts from '../../components/RelatedProducts.astro';
+import RecentlyViewed from '../../components/RecentlyViewed.astro';
+import perfumesData from '../../data/perfumes.json';
+import config from '../../data/config.json';
+
+export function getStaticPaths() {
+  return perfumesData.perfumes.map((perfume) => ({
+    params: { slug: perfume.slug },
+    props: { perfume },
+  }));
+}
+
+const { perfume } = Astro.props;
+const { nombre, marca, precio, moneda, imagen, disponible, badge } = perfume;
+
+const precioFormateado = new Intl.NumberFormat('es-CR', {
+  style: 'currency',
+  currency: moneda,
+  maximumFractionDigits: 0,
+}).format(precio);
+
+const badgeLabels: Record<string, string> = {
+  'mas-vendido': 'Más vendido',
+  'nuevo': 'Nuevo',
+  'exclusivo': 'Exclusivo',
+};
+
+const mensajeWhatsapp = encodeURIComponent(
+  `Hola, me interesa el perfume ${nombre} (${marca}) que vi en la web.`
+);
+const whatsappUrl = `https://wa.me/${config.whatsappNumber}?text=${mensajeWhatsapp}`;
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name: nombre,
+  brand: { '@type': 'Brand', name: marca },
+  image: imagen,
+  offers: {
+    '@type': 'Offer',
+    priceCurrency: moneda,
+    price: precio,
+    availability: disponible
+      ? 'https://schema.org/InStock'
+      : 'https://schema.org/OutOfStock',
+  },
+};
+---
+
+<Layout title={`${nombre} — ${marca}`} description={`${nombre} de ${marca}. ${precioFormateado}. Disponible en Le Parfum, Costa Rica.`} image={imagen}>
+  <Header />
+
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+
+  <main class="container">
+    <a href="/#catalogo" class="back">← Volver al catálogo</a>
+
+    <div class="product">
+      <div class="product__image-wrap">
+        <img src={imagen} alt={nombre} width="600" height="750" class="product__image skeleton" />
+        {!disponible && <span class="product__overlay">Agotado</span>}
+        {badge && badgeLabels[badge] && disponible && (
+          <span class="product__badge">{badgeLabels[badge]}</span>
+        )}
+      </div>
+
+      <div class="product__info">
+        <p class="product__marca">{marca}</p>
+        <h1 class="product__name">{nombre}</h1>
+        <p class="product__price">{precioFormateado}</p>
+        <p class="product__stock" class:list={{ 'is-out': !disponible }}>
+          {disponible ? 'Disponible' : 'Agotado por el momento'}
+        </p>
+
+        {disponible ? (
+          <div class="product__actions">
+            <button
+              type="button"
+              class="product__cta"
+              id="add-to-cart-btn"
+              data-slug={perfume.slug}
+              data-nombre={nombre}
+              data-marca={marca}
+              data-precio={precio}
+              data-moneda={moneda}
+              data-imagen={imagen}
+            >
+              Agregar al carrito
+            </button>
+            <a href={whatsappUrl} class="product__secondary" target="_blank" rel="noopener noreferrer">
+              o consultar directamente por WhatsApp
+            </a>
+          </div>
+        ) : (
+          <button class="product__cta is-disabled" disabled>No disponible</button>
+        )}
+      </div>
+    </div>
+
+    <RelatedProducts actual={perfume} todos={perfumesData.perfumes} />
+    <RecentlyViewed excludeSlug={perfume.slug} />
+  </main>
+
+  <Footer />
+</Layout>
+
+<script>
+  import { addToCart } from '../../scripts/cart.ts';
+  import { trackView } from '../../scripts/recentlyViewed.ts';
+
+  const btn = document.getElementById('add-to-cart-btn');
+  const slug = btn?.dataset.slug;
+  if (slug) trackView(slug);
+
+  btn?.addEventListener('click', () => {
+    addToCart({
+      slug: btn.dataset.slug!,
+      nombre: btn.dataset.nombre!,
+      marca: btn.dataset.marca!,
+      precio: Number(btn.dataset.precio),
+      moneda: btn.dataset.moneda!,
+      imagen: btn.dataset.imagen!,
+    });
+
+    const original = btn.textContent;
+    btn.textContent = 'Agregado ✓';
+    btn.classList.add('is-added');
+    setTimeout(() => {
+      btn.textContent = original;
+      btn.classList.remove('is-added');
+    }, 1400);
+  });
+
+  document.querySelectorAll<HTMLImageElement>('.product__image.skeleton').forEach((img) => {
+    const clear = () => img.classList.remove('skeleton');
+    if (img.complete) clear();
+    else img.addEventListener('load', clear, { once: true });
+  });
+</script>
+
+<style>
+  .container {
+    max-width: 1200px;
+    margin-inline: auto;
+    padding: var(--space-lg) var(--space-md) var(--space-2xl);
+  }
+
+  .back {
+    display: inline-block;
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    text-decoration: none;
+    margin-bottom: var(--space-lg);
+    transition: color var(--duration-fast) var(--ease-standard);
+  }
+
+  .back:hover {
+    color: var(--color-text);
+  }
+
+  .product {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-xl);
+    align-items: start;
+  }
+
+  .product__image-wrap {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background: var(--color-bg-elevated);
+  }
+
+  .product__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .product__overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-bg-elevated);
+    background: rgba(26, 26, 26, 0.55);
+    font-size: var(--text-sm);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .product__badge {
+    position: absolute;
+    top: var(--space-sm);
+    left: var(--space-sm);
+    background: var(--color-bg-elevated);
+    color: var(--color-accent-dark);
+    font-size: var(--text-xs);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 0.35em 0.75em;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border);
+  }
+
+  .product__marca {
+    font-size: var(--text-sm);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-accent-dark);
+    margin: 0 0 var(--space-xs);
+  }
+
+  .product__name {
+    font-size: var(--text-3xl);
+    line-height: 1.05;
+    margin-bottom: var(--space-sm);
+  }
+
+  .product__price {
+    font-size: var(--text-xl);
+    margin: 0 0 var(--space-sm);
+  }
+
+  .product__stock {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    margin: 0 0 var(--space-lg);
+  }
+
+  .product__stock.is-out {
+    color: var(--color-unavailable);
+  }
+
+  .product__actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-xs);
+  }
+
+  .product__cta {
+    display: inline-block;
+    background: var(--color-text);
+    color: var(--color-bg-elevated);
+    text-decoration: none;
+    font-size: var(--text-sm);
+    letter-spacing: 0.03em;
+    padding: 0.9em 1.75em;
+    border-radius: var(--radius-sm);
+    border: none;
+    cursor: pointer;
+    transition: opacity var(--duration-fast) var(--ease-standard), background var(--duration-fast) var(--ease-standard);
+  }
+
+  .product__cta:hover {
+    opacity: 0.85;
+  }
+
+  .product__cta.is-added {
+    background: var(--color-accent-dark);
+  }
+
+  .product__cta.is-disabled {
+    background: var(--color-unavailable);
+    cursor: not-allowed;
+  }
+
+  .product__secondary {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    text-decoration: underline;
+  }
+
+  .product__secondary:hover {
+    color: var(--color-text);
+  }
+
+  @media (max-width: 800px) {
+    .product {
+      grid-template-columns: 1fr;
+    }
+    .product__name {
+      font-size: var(--text-2xl);
+    }
+  }
+</style>

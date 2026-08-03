@@ -1,0 +1,144 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import config from '../data/config.json';
+
+const faqs = [
+  {
+    pregunta: '¿Los perfumes son 100% originales?',
+    respuesta:
+      'Sí. Todos nuestros perfumes son originales, adquiridos directamente con proveedores autorizados. No vendemos réplicas ni versiones "inspiradas en".',
+  },
+  {
+    pregunta: '¿Hacen envíos a todo Costa Rica?',
+    respuesta:
+      'Sí, enviamos a todo el país. En la GAM la entrega toma 1–2 días hábiles; en el resto del país, entre 2–4 días hábiles según la zona.',
+  },
+  {
+    pregunta: '¿Cómo pago?',
+    respuesta:
+      'Coordinamos el pago directamente por WhatsApp: aceptamos SINPE Móvil y tarjeta. Te confirmamos el total, incluyendo el envío, antes de procesar el pedido.',
+  },
+  {
+    pregunta: '¿Puedo hacer cambios si el perfume no me convence?',
+    respuesta:
+      'Sí, dentro de los 5 días naturales posteriores a la entrega, siempre que el producto esté sin abrir y en su empaque original.',
+  },
+  {
+    pregunta: '¿Qué hago si mi pedido llega dañado?',
+    respuesta:
+      'Escribinos dentro de las 48 horas siguientes a la entrega con fotos del producto y el empaque. Evaluamos cada caso para reembolso o reposición.',
+  },
+  {
+    pregunta: '¿Cómo hago un pedido?',
+    respuesta:
+      'Elegí tu perfume en el catálogo y tocá "Consultar por WhatsApp" en la página del producto. Ahí coordinamos disponibilidad, pago y entrega.',
+  },
+];
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({
+    '@type': 'Question',
+    name: f.pregunta,
+    acceptedAnswer: { '@type': 'Answer', text: f.respuesta },
+  })),
+};
+---
+
+<Layout
+  title="Preguntas frecuentes"
+  description="Respuestas sobre envíos, cambios, pagos y garantía de originalidad en Le Parfum."
+>
+  <Header />
+
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+
+  <main class="container">
+    <h1>Preguntas frecuentes</h1>
+    <p class="lead">
+      Todo lo que necesitás saber antes de comprar. ¿No encontrás tu
+      respuesta? Escribinos a{' '}
+      {config.email && <a href={`mailto:${config.email}`}>{config.email}</a>}.
+    </p>
+
+    <div class="faq-list">
+      {faqs.map((faq) => (
+        <details class="faq-item">
+          <summary>{faq.pregunta}</summary>
+          <p>{faq.respuesta}</p>
+        </details>
+      ))}
+    </div>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+  .container {
+    max-width: 720px;
+    margin-inline: auto;
+    padding: var(--space-xl) var(--space-md) var(--space-2xl);
+  }
+
+  h1 {
+    font-size: var(--text-2xl);
+    margin-bottom: var(--space-sm);
+  }
+
+  .lead {
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-lg);
+    line-height: 1.7;
+  }
+
+  .lead a {
+    color: var(--color-accent-dark);
+  }
+
+  .faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  .faq-item {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-sm) var(--space-md);
+    background: var(--color-bg-elevated);
+  }
+
+  .faq-item summary {
+    cursor: pointer;
+    font-weight: 500;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .faq-item summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq-item summary::after {
+    content: '+';
+    font-size: var(--text-lg);
+    color: var(--color-accent-dark);
+    transition: transform var(--duration-fast) var(--ease-standard);
+  }
+
+  .faq-item[open] summary::after {
+    transform: rotate(45deg);
+  }
+
+  .faq-item p {
+    margin: var(--space-sm) 0 0;
+    color: var(--color-text-muted);
+    line-height: 1.7;
+  }
+</style>

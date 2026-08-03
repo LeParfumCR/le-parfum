@@ -1,0 +1,128 @@
+---
+import perfumesData from '../data/perfumes.json';
+
+interface Props {
+  excludeSlug?: string;
+}
+
+const { excludeSlug } = Astro.props;
+---
+
+<section
+  class="recent"
+  id="recently-viewed"
+  aria-label="Vistos recientemente"
+  data-perfumes={JSON.stringify(perfumesData.perfumes)}
+  data-exclude={excludeSlug ?? ''}
+  hidden
+>
+  <h2 class="recent__heading">Vistos recientemente</h2>
+  <div class="recent__grid" id="recently-viewed-grid"></div>
+</section>
+
+<script>
+  import { getRecentlyViewed } from '../scripts/recentlyViewed.ts';
+
+  const section = document.getElementById('recently-viewed');
+  const perfumes = JSON.parse(section?.dataset.perfumes || '[]');
+  const excludeSlug = section?.dataset.exclude || undefined;
+  const slugs = getRecentlyViewed(excludeSlug);
+  const grid = document.getElementById('recently-viewed-grid');
+
+  const items = slugs
+    .map((slug) => perfumes.find((p) => p.slug === slug))
+    .filter(Boolean)
+    .slice(0, 4);
+
+  if (items.length > 0 && section && grid) {
+    section.hidden = false;
+
+    items.forEach((p) => {
+      const formatter = new Intl.NumberFormat('es-CR', {
+        style: 'currency',
+        currency: p.moneda,
+        maximumFractionDigits: 0,
+      });
+
+      const a = document.createElement('a');
+      a.href = `/producto/${p.slug}`;
+      a.className = 'recent__card';
+
+      const imgWrap = document.createElement('div');
+      imgWrap.className = 'recent__image-wrap';
+      const img = document.createElement('img');
+      img.src = p.imagen;
+      img.alt = p.nombre;
+      img.loading = 'lazy';
+      imgWrap.appendChild(img);
+
+      const nombre = document.createElement('p');
+      nombre.className = 'recent__nombre';
+      nombre.textContent = p.nombre;
+
+      const precio = document.createElement('p');
+      precio.className = 'recent__precio';
+      precio.textContent = formatter.format(p.precio);
+
+      a.append(imgWrap, nombre, precio);
+      grid.appendChild(a);
+    });
+  }
+</script>
+
+<style>
+  .recent {
+    max-width: 1200px;
+    margin: var(--space-2xl) auto 0;
+    padding: 0 var(--space-md);
+  }
+
+  .recent__heading {
+    font-size: var(--text-lg);
+    margin-bottom: var(--space-md);
+    color: var(--color-text-muted);
+  }
+
+  .recent__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-md) var(--space-sm);
+  }
+
+  :global(.recent__card) {
+    text-decoration: none;
+    color: var(--color-text);
+    display: block;
+  }
+
+  :global(.recent__image-wrap) {
+    aspect-ratio: 3 / 4;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background: var(--color-bg-elevated);
+    margin-bottom: var(--space-xs);
+  }
+
+  :global(.recent__image-wrap img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  :global(.recent__nombre) {
+    font-size: var(--text-sm);
+    margin: 0;
+  }
+
+  :global(.recent__precio) {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+
+  @media (max-width: 900px) {
+    .recent__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>
