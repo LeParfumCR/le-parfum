@@ -2,7 +2,7 @@
   "perfumes": [
     {
       "badge": "mas-vendido",
-      "precio": 34999,
+      "precio": 32999,
       "destacado": true,
       "nombre": "Light Blue",
       "slug": "light-blue-hombre",
@@ -12,6 +12,116 @@
       "moneda": "CRC",
       "id": "1",
       "marca": "Dolce & Gabbana"
+    },
+    {
+      "precio": 28999,
+      "destacado": false,
+      "nombre": "L' Imperatrice",
+      "slug": "imperatrice",
+      "categoria": "mujer",
+      "imagen": "/images/perfumes/dolce_gabbana-l_imperatriceeaudetoilette100ml_79b89280-0c85-4128-bc7a-71a3de5552b8.webp",
+      "disponible": true,
+      "moneda": "CRC",
+      "id": "2",
+      "marca": "Dolce & Gabbana"
+    },
+    {
+      "precio": 39999,
+      "destacado": false,
+      "nombre": "Light Blue 200ml",
+      "slug": "light-blue-200",
+      "categoria": "hombre",
+      "imagen": "/images/perfumes/lightblue-hombre.png",
+      "disponible": true,
+      "moneda": "CRC",
+      "id": "3",
+      "marca": "Dolce & Gabbana"
+    },
+    {
+      "precio": 41999,
+      "destacado": false,
+      "nombre": "Set Light Blue 3pzs",
+      "slug": "set-light-blue-mujer-3p",
+      "categoria": "mujer",
+      "imagen": "/images/perfumes/4943330.avif",
+      "disponible": true,
+      "moneda": "CRC",
+      "id": "4",
+      "marca": "Dolce & Gabbana"
+    },
+    {
+      "badge": "mas-vendido",
+      "precio": 34999,
+      "destacado": true,
+      "nombre": "Light Blue ",
+      "slug": "light-blue-mujer",
+      "categoria": "mujer",
+      "imagen": "/images/perfumes/dolce_gabbana-lightblueeaudetoilette100ml_ec009fdb-2683-4b9e-8a83-60adb59bf44b.webp",
+      "disponible": true,
+      "moneda": "CRC",
+      "id": "5",
+      "marca": "Dolce & Gabbana"
+    },
+    {
+      "precio": 49999,
+      "destacado": false,
+      "nombre": "Le Beau Paradise Garden",
+      "slug": "paradise-garden",
+      "categoria": "hombre",
+      "imagen": "/images/perfumes/o.mk8okugcnef.jpg",
+      "disponible": true,
+      "moneda": "CRC",
+      "id": "6",
+      "marca": "Jean Paul Gaultier"
+    },
+    {
+      "precio": 44999,
+      "destacado": false,
+      "nombre": "Ultra Male",
+      "slug": "ultramale",
+      "categoria": "hombre",
+      "imagen": "/images/perfumes/jean-paul-gaultier-le-male-ultra-intense-eau-de-toilette-75ml.jpg",
+      "disponible": true,
+      "moneda": "CRC",
+      "id": "7",
+      "marca": "Jean Paul Gaultier"
+    },
+    {
+      "precio": 44999,
+      "destacado": true,
+      "nombre": "Le Male Le Parfum",
+      "slug": "le-male-le-parfum",
+      "categoria": "hombre",
+      "imagen": "/images/perfumes/2573367_jean-paul-gaultier-le-male-le-parfum-200ml.jpg",
+      "disponible": true,
+      "moneda": "CRC",
+      "id": "8",
+      "marca": "Jean Paul Gaultier"
+    },
+    {
+      "badge": "nuevo",
+      "precio": 44999,
+      "destacado": false,
+      "nombre": "Set Scandal Intense",
+      "slug": "set-scandal-intense",
+      "categoria": "hombre",
+      "imagen": "/images/perfumes/scandal-pour-homme-intense___260212.webp",
+      "disponible": true,
+      "moneda": "CRC",
+      "id": "9",
+      "marca": "Jean Paul Gaultier"
+    },
+    {
+      "precio": 42999,
+      "destacado": false,
+      "nombre": "Scandal",
+      "slug": "scandal-mujer",
+      "categoria": "mujer",
+      "imagen": "/images/perfumes/scandal-jean-paul-gaultier-eau-de-parfum-perfume-feminino-pyxm26e8ep.webp",
+      "disponible": true,
+      "moneda": "CRC",
+      "id": "10",
+      "marca": "Jean Paul Gaultier"
     }
   ]
 }
