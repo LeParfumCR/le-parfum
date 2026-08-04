@@ -122,6 +122,79 @@
       "moneda": "CRC",
       "id": "10",
       "marca": "Jean Paul Gaultier"
+    },
+    {
+      "precio": 27999,
+      "destacado": false,
+      "nombre": "Toy 2 Pearl ",
+      "slug": "pearl",
+      "categoria": "unisex",
+      "imagen": "/images/perfumes/12586_1_cddcad92f6a64667a7b7589dfceae2e4.jpg",
+      "disponible": true,
+      "moneda": "CRC",
+      "id": "11",
+      "marca": "Moschino"
+    },
+    {
+      "precio": 27999,
+      "destacado": false,
+      "nombre": "Toy Boy",
+      "slug": "toy-boy",
+      "categoria": "hombre",
+      "imagen": "/images/perfumes/perfume-moschino-toy-boy-eau-de-parfum-hombre-100ml.jpg",
+      "disponible": true,
+      "moneda": "CRC",
+      "id": "12",
+      "marca": "Moschino"
+    },
+    {
+      "precio": 24999,
+      "destacado": false,
+      "nombre": "Funny",
+      "slug": "funny",
+      "categoria": "mujer",
+      "imagen": "/images/perfumes/b8d062eb-6c0f-450d-a980-7583f2a56114.6002a3bb51eccf5d16fc7dd229a8d928.webp",
+      "disponible": true,
+      "moneda": "CRC",
+      "id": "13",
+      "marca": "Moschino"
+    },
+    {
+      "precio": 27999,
+      "destacado": false,
+      "nombre": "Toy 2 ",
+      "slug": "toy-2",
+      "categoria": "mujer",
+      "imagen": "/images/perfumes/00801100383930l.webp",
+      "disponible": true,
+      "moneda": "CRC",
+      "id": "14",
+      "marca": "Moschino"
+    },
+    {
+      "precio": 37999,
+      "destacado": false,
+      "nombre": "Set Toy 2 Pearl",
+      "slug": "set-pearl",
+      "categoria": "unisex",
+      "imagen": "/images/perfumes/251510-800-auto.jpg",
+      "disponible": true,
+      "moneda": "CRC",
+      "id": "15",
+      "marca": "Moschino"
+    },
+    {
+      "badge": "mas-vendido",
+      "precio": 78999,
+      "destacado": true,
+      "nombre": "Set Sauvage EDP",
+      "slug": "sauvage-set",
+      "categoria": "hombre",
+      "imagen": "/images/perfumes/dior-sauvage-edp-100ml-2pc-set_1024x1024.webp",
+      "disponible": true,
+      "moneda": "CRC",
+      "id": "16",
+      "marca": "Dior"
     }
   ]
 }
