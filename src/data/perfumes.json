@@ -53,7 +53,7 @@
       "badge": "mas-vendido",
       "precio": 34999,
       "destacado": true,
-      "nombre": "Light Blue ",
+      "nombre": "Light Blue",
       "slug": "light-blue-mujer",
       "categoria": "mujer",
       "imagen": "/images/perfumes/dolce_gabbana-lightblueeaudetoilette100ml_ec009fdb-2683-4b9e-8a83-60adb59bf44b.webp",
@@ -114,7 +114,7 @@
     {
       "precio": 42999,
       "destacado": false,
-      "nombre": "Scandal",
+      "nombre": "Scandal EDP",
       "slug": "scandal-mujer",
       "categoria": "mujer",
       "imagen": "/images/perfumes/scandal-jean-paul-gaultier-eau-de-parfum-perfume-feminino-pyxm26e8ep.webp",
@@ -195,6 +195,43 @@
       "moneda": "CRC",
       "id": "16",
       "marca": "Dior"
+    },
+    {
+      "badge": "mas-vendido",
+      "precio": 49999,
+      "destacado": true,
+      "nombre": "Invictus Elixir",
+      "slug": "invictus-elixir ",
+      "categoria": "hombre",
+      "imagen": "/images/perfumes/hinvve__14864.jpg",
+      "disponible": true,
+      "moneda": "CRC",
+      "id": "17",
+      "marca": "Paco Rabanne"
+    },
+    {
+      "precio": 44999,
+      "destacado": false,
+      "nombre": "Phantom Elixir",
+      "slug": "phantom-elixir",
+      "categoria": "hombre",
+      "imagen": "/images/perfumes/oip.webp",
+      "disponible": true,
+      "moneda": "CRC",
+      "id": "18",
+      "marca": "Paco Rabbane"
+    },
+    {
+      "precio": 41999,
+      "destacado": false,
+      "nombre": "Set One Million",
+      "slug": "set-one-million",
+      "categoria": "hombre",
+      "imagen": "/images/perfumes/1-million-travel-duo.jpg",
+      "disponible": true,
+      "moneda": "CRC",
+      "id": "19",
+      "marca": "Paco Rabbane"
     }
   ]
 }
