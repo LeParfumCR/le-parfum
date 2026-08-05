@@ -272,14 +272,14 @@
     {
       "precio": 25999,
       "destacado": false,
-      "nombre": "Clinique Happy Heart",
+      "nombre": "Happy Heart",
       "slug": "clinique-heart",
       "categoria": "mujer",
       "imagen": "/images/perfumes/r.jpg",
       "disponible": true,
       "moneda": "CRC",
       "id": "23",
-      "marca": "Clinique Happy"
+      "marca": "Clinique"
     },
     {
       "precio": 20999,
@@ -532,7 +532,7 @@
       "disponible": true,
       "moneda": "CRC",
       "id": "44",
-      "marca": "Bvlagari"
+      "marca": "Bvlgari"
     },
     {
       "precio": 29999,
@@ -580,12 +580,12 @@
       "disponible": true,
       "moneda": "CRC",
       "id": "48",
-      "marca": " Halloween "
+      "marca": "Halloween"
     },
     {
       "precio": 27999,
       "destacado": false,
-      "nombre": "Set Halloween ",
+      "nombre": "Set Halloween",
       "slug": "set-halloween-mujer",
       "categoria": "mujer",
       "imagen": "/images/perfumes/8431754008745.webp",
