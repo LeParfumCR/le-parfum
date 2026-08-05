@@ -63,8 +63,9 @@
       "marca": "Dolce & Gabbana"
     },
     {
+      "badge": "mas-vendido",
       "precio": 49999,
-      "destacado": false,
+      "destacado": true,
       "nombre": "Le Beau Paradise Garden",
       "slug": "paradise-garden",
       "categoria": "hombre",
@@ -75,8 +76,9 @@
       "marca": "Jean Paul Gaultier"
     },
     {
+      "badge": "mas-vendido",
       "precio": 44999,
-      "destacado": false,
+      "destacado": true,
       "nombre": "Ultra Male",
       "slug": "ultramale",
       "categoria": "hombre",
@@ -124,8 +126,9 @@
       "marca": "Jean Paul Gaultier"
     },
     {
+      "badge": "mas-vendido",
       "precio": 27999,
-      "destacado": false,
+      "destacado": true,
       "nombre": "Toy 2 Pearl ",
       "slug": "pearl",
       "categoria": "unisex",
@@ -523,8 +526,9 @@
       "marca": "Marc Jacobs"
     },
     {
+      "badge": "mas-vendido",
       "precio": 51999,
-      "destacado": false,
+      "destacado": true,
       "nombre": "Set Omnia Coral",
       "slug": "set-omnia-coral",
       "categoria": "mujer",
@@ -679,8 +683,9 @@
       "marca": "Lattafa"
     },
     {
+      "badge": "mas-vendido",
       "precio": 42999,
-      "destacado": false,
+      "destacado": true,
       "nombre": "Bad Boy",
       "slug": "bad-boy",
       "categoria": "hombre",
