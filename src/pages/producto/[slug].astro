@@ -171,7 +171,7 @@ const schema = {
 
   .product__image-wrap {
     position: relative;
-    aspect-ratio: 4 / 5;
+    aspect-ratio: 1 / 1;
     border-radius: var(--radius-md);
     overflow: hidden;
     background: var(--color-bg-elevated);
@@ -180,7 +180,8 @@ const schema = {
   .product__image {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
+    padding: 6%;
   }
 
   .product__overlay {

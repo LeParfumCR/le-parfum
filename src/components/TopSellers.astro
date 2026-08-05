@@ -251,7 +251,7 @@ const items = perfumes.slice(0, 8);
 
   .top__image-wrap {
     position: relative;
-    aspect-ratio: 4 / 5;
+    aspect-ratio: 1 / 1;
     border-radius: var(--radius-sm);
     overflow: hidden;
     background: var(--color-bg-elevated);
@@ -263,7 +263,8 @@ const items = perfumes.slice(0, 8);
   .top__image-wrap img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
+    padding: 8%;
   }
 
   .top__overlay {

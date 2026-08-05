@@ -31,7 +31,7 @@ const precioFormateado = new Intl.NumberFormat('es-CR', {
   )}
   <div class="card__image-wrap">
     <span class="card__waft" aria-hidden="true"></span>
-    <img src={imagen} alt={nombre} loading="lazy" decoding="async" width="400" height="533" class="card__image skeleton" />
+    <img src={imagen} alt={nombre} loading="lazy" decoding="async" width="400" height="400" class="card__image skeleton" />
     {!disponible && <span class="card__overlay">Agotado</span>}
     {disponible && (
       <button
@@ -172,7 +172,7 @@ const precioFormateado = new Intl.NumberFormat('es-CR', {
 
   .card__image-wrap {
     position: relative;
-    aspect-ratio: 3 / 4;
+    aspect-ratio: 1 / 1;
     overflow: hidden;
     background: var(--color-bg-elevated);
     border: 1px solid var(--color-border);
@@ -219,13 +219,14 @@ const precioFormateado = new Intl.NumberFormat('es-CR', {
   .card__image {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
+    padding: 8%;
     transition: transform var(--duration-base) var(--ease-standard);
   }
 
   @media (hover: hover) and (pointer: fine) {
     .card:hover .card__image {
-      transform: scale(1.03);
+      transform: scale(1.05);
     }
   }
 
